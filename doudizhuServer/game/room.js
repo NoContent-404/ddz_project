@@ -456,7 +456,7 @@ module.exports = function (spec, player) {
                 // for(let i = 0;i<_playerList.length; i++){
                 //     _playerList[i].sendNoMaster(_playerList[i].accountID);
                 // }
-                setState(RoomState.PushCard);
+                // setState(RoomState.PushCard);   //  重新发牌
             }else{
                 changeMaster();
             }
@@ -853,8 +853,8 @@ module.exports = function (spec, player) {
                             return;
                         }
 
-                        cardsList.push(robot[0]);
-                        that.playerPushCard(player,cardsList[0]);
+                        // cardsList.push(robot[0]);
+                        that.playerPushCard(player,cardsList);
                         if(cb){
                             if(cb){
                                 cb(null,cardsList[0]);

@@ -77,25 +77,49 @@ module.exports = function () {
             Card(CardValue['3'], CardShape.C),
             Card(CardValue['3'], CardShape.C),
             Card(CardValue['3'], CardShape.C),
-            Card(CardValue['4'], CardShape.C),
-            Card(CardValue['4'], CardShape.C),
-            Card(CardValue['4'], CardShape.C),
+            Card(CardValue['3'], CardShape.C),
             Card(CardValue['5'], CardShape.C),
             Card(CardValue['5'], CardShape.C),
             Card(CardValue['5'], CardShape.C),
-            Card(CardValue['10'], CardShape.C),
+            Card(CardValue['5'], CardShape.C),
+            Card(CardValue['7'], CardShape.C),
+            Card(CardValue['7'], CardShape.C),
+            Card(CardValue['8'], CardShape.C),
+            Card(CardValue['8'], CardShape.C),
+            Card(CardValue['9'], CardShape.C),
+            Card(CardValue['9'], CardShape.C),
             Card(CardValue['10'], CardShape.C),
             Card(CardValue['J'], CardShape.C),
-            Card(CardValue['J'], CardShape.C),
-            Card(CardValue['Q'], CardShape.C),
-            Card(CardValue['Q'], CardShape.C),
-            // Card(CardValue['K'], CardShape.C),
-            // Card(CardValue['K'], CardShape.C),
+            // Card(CardValue['J'], CardShape.C),
             Card(undefined, undefined, Kings.k),
-            Card(undefined, undefined, Kings.K),
+            // Card(undefined, undefined, Kings.K),
 
         ];
 
+
+
+        let cardListA = [
+            Card(CardValue['3'], CardShape.C),
+            Card(CardValue['3'], CardShape.C),
+            Card(CardValue['3'], CardShape.C),
+            Card(CardValue['3'], CardShape.C),
+            Card(CardValue['5'], CardShape.C),
+            Card(CardValue['5'], CardShape.C),
+            Card(CardValue['5'], CardShape.C),
+            Card(CardValue['5'], CardShape.C),
+            Card(CardValue['10'], CardShape.C),
+            Card(CardValue['Q'], CardShape.C),
+            Card(CardValue['K'], CardShape.C),
+            Card(CardValue['K'], CardShape.C),
+            Card(CardValue['A'], CardShape.C),
+            Card(CardValue['A'], CardShape.C),
+            Card(CardValue['2'], CardShape.C),
+            Card(CardValue['2'], CardShape.C),
+            // Card(CardValue['J'], CardShape.C),
+            Card(undefined, undefined, Kings.k),
+            // Card(undefined, undefined, Kings.K),
+
+        ];
         for (let i = 0; i < threeCardsMap[0].length; i++) {
             let id = threeCardsMap[0][i].id;
             cardList[i].id = id;
@@ -103,8 +127,8 @@ module.exports = function () {
         }
         for (let i = 0; i < threeCardsMap[1].length; i++) {
             let id = threeCardsMap[1][i].id;
-            cardList[i].id = id;
-            threeCardsMap[1][i] = cardList[i]
+            cardListA[i].id = id;
+            threeCardsMap[1][i] = cardListA[i]
         }
 
         
@@ -335,6 +359,7 @@ module.exports = function () {
             }
 
             let oneCount = 0;   //  记录单张个数
+            let towCount = 0;
             let threeList = []; //  记录3张
             for (let i in map) {
                 if (map[i] === 3) {
@@ -345,12 +370,12 @@ module.exports = function () {
                     oneCount++;
                 }
                 if (map[i] === 2) {
-                    oneCount++;
+                    towCount++;
                 }
             }
             console.log('one count = ' + oneCount);
             console.log('three list = ' + JSON.stringify(threeList));
-            if (threeList.length < 2 || (oneCount > 3 || oneCount < 0) ) {
+            if (threeList.length < 2 || (oneCount <2 && towCount !== 1)  || towCount === 2  ) {
                 return false;
             }
             if (Math.abs(Number(threeList[0]) - Number(threeList[1])) === 1) {
@@ -361,7 +386,7 @@ module.exports = function () {
         return false;
     };
     const isPlaneWithTwo = function (cardList) {    //  飞机带对子
-        if (cardList.length === 10) {
+        if (cardList.length > 9) {
             let map = {};
             for (let i = 0; i < cardList.length; i++) {
                 let key = -1;
@@ -384,7 +409,7 @@ module.exports = function () {
             //     '6': 2
             // }
             let keys = Object.keys(map);
-            if (keys.length !== 4) {
+            if (keys.length < 3) {
                 return false;
             }
             let twoCount = 0;   //  记录对子出现次数
@@ -398,7 +423,7 @@ module.exports = function () {
                     twoCount++;
                 }
             }
-            if (threeList.length !== 2 || twoCount !== 2) {
+            if (threeList.length < 2 || twoCount < 2) {
                 return false;
             }
             for(let i = 0;i<threeList.length - 1 ; i++){
@@ -481,7 +506,7 @@ module.exports = function () {
             // }
             
             let oneCount = 0;   //  记录单张个数
-            let TowCount = 0;   //  记录单张个数
+            let towCount = 0;   //  记录对子个数
             let fourCount = 0;   //  记录单张个数
             let keys = Object.keys(map);
             if (keys.length <2) {
@@ -493,20 +518,15 @@ module.exports = function () {
                     fourCount++;
                 } 
                 if(map[i] === 2){
-                    TowCount++;
+                    towCount++;
                 }
                 if(map[i] ===1) {
                     oneCount++;
                 }
             }
 
-            if(fourCount === 2){
-                return  true;
-            }
-            if(fourCount !==0 && TowCount === 1){
-                return true;
-            }
-            if(fourCount !==0 && oneCount === 2 || (fourCount !==0 && oneCount === 1 )){
+            
+            if(fourCount === 1 && (oneCount === 2 || oneCount === 1) && towCount === 0|| (fourCount === 1 && towCount === 1 && oneCount === 0)){
                 return true;
             }else{
                 return false;
@@ -520,7 +540,7 @@ module.exports = function () {
 
 
 
-    const isFourWithTow = function (cardList) {    //  是否4带单张
+    const isFourWithTow = function (cardList) {    //  是否4带2对子
         if (cardList.length >= 5) {
             let map = {};
             for (let i = 0; i < cardList.length; i++) {
@@ -556,7 +576,7 @@ module.exports = function () {
             if(fourCount === 2){
                 return  true;
             }
-            if(fourCount !==0 && TowCount === 2){
+            if(fourCount === 1 && TowCount === 2){
                 return true;
             }else{
                 return false;
@@ -629,7 +649,7 @@ module.exports = function () {
             value: 1
         },
         'fourWithTow': {
-            name: 'fourWithTow',
+            name: 'FourWithTow',
             value: 1
         }
 
@@ -1264,7 +1284,7 @@ module.exports = function () {
             }
         }
 
-        let oneList = getRepeatCardsList(num, cardsB);
+        let oneList = getRepeatCardsList(num, cardsB);//    获取单或者对子
         let minNum = 100;
         let oneCard = undefined;
         for (let i = 0 ; i < oneList.length ; i ++){
@@ -1280,6 +1300,10 @@ module.exports = function () {
                     l.push(oneCard[j]);
                 }
             }
+        }
+
+        if(oneCard === undefined){
+            cardList = [];
         }
 
         let kingBoom = getKingBoom(cardsB);
@@ -1306,6 +1330,9 @@ module.exports = function () {
         let cardList = [];
         
         let fourBoomList = getFourBoom(cardsB);
+        let oneCard= getRepeatCardsList(1, cardsB);
+
+
         if (fourBoomList !== false) {
             // cardsList.push(fourBoom);
             for (let i = 0; i < fourBoomList.length; i++) {
@@ -1351,11 +1378,14 @@ module.exports = function () {
     that.tipsFourWithOne = function (cardsA, cardsB) { //  提示4带1/4带2
         //3,3,3,3,4
         //3,3,3,3,4,4
+        let oneCard= getRepeatCardsList(1, cardsB);
+
         return getFourWithNumCardsList(1, cardsA, cardsB);
 
     };
-    that.tipsFourWithTow = function (cardsA, cardsB) { //  提示4带对子
-        //3,3,3,3,4
+    that.tipsFourWithTow = function (cardsA, cardsB) { //  提示4带2对子
+        //3,3,3,3,4,4,5,5
+        //3,3,3,3,4,4,4,4
         return getFourWithNumCardsList(2, cardsA, cardsB);
 
     };
@@ -1387,9 +1417,14 @@ module.exports = function () {
         return minNum;
     };
 
-    const getPlaneWithStart = function (num,cardsA ,cardsB) {  //  获取飞机
+    const getPlaneWithStart = function (num, cardsB,cardsA) {
         let list = getRepeatCardsList(3,cardsB);
         let listA = getRepeatCardsList(3,cardsA);
+        let lengthA = 0;
+        for(let i in listA){
+            lengthA = lengthA + listA[i].length;
+        }
+
         let map = {};
         for (let i = 0 ; i < list.length ; i ++){
             if (map.hasOwnProperty(list[i][0].value)){
@@ -1402,25 +1437,30 @@ module.exports = function () {
         keys.sort((a,b)=>{
             return Number(a) - Number(b);
         });
+        for(let i in keys){
+            if(keys[i] <= num){
+                keys.splice(i,1)
+            }
+        }
         let tempCardsList = [];
-
-        let cy = [];
-        for (let i = 0 ; i < (keys.length -1) ; i ++){
-            if (Math.abs(Number(keys[i]) - Number(keys[i + 1])) === 1){
-                let l = [];
-                if(cy.length === listA.length){
-                    cy =[];
-                }
-
+        let l = [];
+        let cont = 0; 
+        for (let i = cont ; i < (keys.length); i ++){
+            if (Math.abs(Number(keys[i]) - Number(keys[i + 1])) !== 1){
                
-      
-                for (let j = 0 ; j < map[keys[i]].length ; j ++){
+                for (let j = cont ; j <=i + cont  ; j++){
+                    for(let k in map[keys[j]]){
+                        l.push(map[keys[j]][k]);
+                    }
+                    if(l.length === lengthA){
+                        tempCardsList.push(l);
+                        i=tempCardsList.length -1;
+                        cont = tempCardsList.length;
+                        l = [];
+                        break;
+                    }
                     
-                    l.push(map[keys[i]][j]);
-                   
                 }
-                cy.push(l);
-
                 
             }
         }
@@ -1436,7 +1476,7 @@ module.exports = function () {
     that.tipsPlane = function (cardsA, cardsB) {    //  提示飞机
         console.log('提示飞机');
         let valueA =  getPlaneMinValue(cardsA);
-        let cardsList = getPlaneWithStart(valueA,cardsA ,cardsB);
+        let cardsList = getPlaneWithStart(valueA ,cardsB,cardsA);
         let kingBoom = getKingBoom(cardsB);
         if (kingBoom !== false) {
             cardsList.push(kingBoom);
@@ -1457,21 +1497,38 @@ module.exports = function () {
         // let list = that.tipsPlane(cardsA, cardsB);
         let valueA = getPlaneMinValue(cardsA);
         console.log('value a = ' + valueA);
-        let cardsList = getPlaneWithStart(valueA, cardsB);
+
+        let listA = getRepeatCardsList(3,cardsA);
+        let lenA = listA.length;
+
+        let cardsList = getPlaneWithStart(valueA, cardsB,cardsA);
         console.log('cards list = ' + JSON.stringify(cardsList));
         let oneCard = getRepeatCardsList(1, cardsB);
         console.log('one card = ' + JSON.stringify(oneCard));
         oneCard.sort((a,b)=>{
             return a[0].value - b[0].value;
         });
-        if (oneCard.length >= 2){
+        if(oneCard.length <lenA){
+            cardsList = [];
+        }else{
+
             for (let i = 0 ; i < cardsList.length ; i ++){
                 let cards = cardsList[i];
-                for (let j = 0 ; j < 2 ; j ++){
+                for (let j = 0 ; j < lenA ; j ++){
                     cards.push(oneCard[j][0]);
                 }
             }
         }
+        // if (oneCard.length >= 2){
+        //     for (let i = 0 ; i < cardsList.length ; i ++){
+        //         let cards = cardsList[i];
+        //         for (let j = 0 ; j < lenA ; j ++){
+        //             cards.push(oneCard[j][0]);
+        //         }
+        //     }
+        // }else{
+        //     cardsList = [];
+        // }
 
         let kingBoom = getKingBoom(cardsB);
         if (kingBoom !== false) {
@@ -1490,26 +1547,45 @@ module.exports = function () {
 
     that.tipsPlaneWithTwo = function (cardsA, cardsB) { //  提示飞机带对子
         let valueA = getPlaneMinValue(cardsA);
+        let listA = getRepeatCardsList(3,cardsA);
+        let lenA = listA.length;
         console.log('value a = ' + valueA);
-        let cardsList = getPlaneWithStart(valueA, cardsB);
+        let cardsList = getPlaneWithStart(valueA, cardsB,cardsA);
         console.log('cards list = ' + JSON.stringify(cardsList));
         let twoCard = getRepeatCardsList(2, cardsB);
         console.log('one card = ' + JSON.stringify(twoCard));
         twoCard.sort((a,b)=>{
             return a[0].value - b[0].value;
         });
-        if (twoCard.length >= 2){
+
+        if(twoCard.length < lenA){
+            cardsList = [];
+        }else{
             for (let i = 0 ; i < cardsList.length ; i ++){
                 let cards = cardsList[i];
-                for (let j = 0 ; j < 2 ; j ++){
+                for (let j = 0 ; j < lenA ; j ++){
                     // cards.push(twoCard[j][0]);
                     for (let h = 0 ; h < twoCard[j].length ; h ++){
                         cards.push(twoCard[j][h]);
                     }
 
                 }
-            }
+            } 
         }
+        // if (twoCard.length >= 2){
+        //     for (let i = 0 ; i < cardsList.length ; i ++){
+        //         let cards = cardsList[i];
+        //         for (let j = 0 ; j < lenA ; j ++){
+        //             // cards.push(twoCard[j][0]);
+        //             for (let h = 0 ; h < twoCard[j].length ; h ++){
+        //                 cards.push(twoCard[j][h]);
+        //             }
+
+        //         }
+        //     }
+        // }
+
+
         let kingBoom = getKingBoom(cardsB);
         if (kingBoom !== false) {
             cardsList.push(kingBoom);
@@ -1533,15 +1609,20 @@ module.exports = function () {
         }
         return minNum;
     };
-    const getScrollCardsList = function (length, cards) {
+    const getScrollCardsList = function (length, cards) {   //  获取顺子
 
         let cardList = [];
         let map = {};
         for (let i = 0 ; i < cards.length ; i ++){
-            if (!map.hasOwnProperty(cards[i].value)){
-                cardList.push(cards[i]);
-                map[cards[i].value] = true;
+            if(cards[i].value === undefined || cards[i].value === 13){
+
+            }else{
+                if (!map.hasOwnProperty(cards[i].value)){
+                    cardList.push(cards[i]);
+                    map[cards[i].value] = true;
+                }
             }
+           
         }
 
         cardList.sort((a, b)=>{
@@ -1643,7 +1724,10 @@ module.exports = function () {
                 for (let j = 0; j < 2; j++) {
                     l.push(map[i][j]);
                 }
-                list.push(l);
+                if(l[0].value !== 13){
+                    list.push(l);
+                }
+                
             }
         }
         // [[2,2],[1,1]]
