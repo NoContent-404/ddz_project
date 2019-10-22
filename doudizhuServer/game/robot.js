@@ -28,79 +28,79 @@ that.selectRobot = function(palyer,data,socket,room,cb){
         if(err){
             console.log(' robot.js ==>  db.js   查找机器人出现错误 = ' ,err);
         }else{
-            console.log('robot.js ==>   db.js   查找机器人成功 = 机器人 ：' ,JSON.stringify(robotmsg))
+            // console.log('robot.js ==>   db.js   查找机器人成功 = 机器人 ：' ,JSON.stringify(robotmsg))
             
-            console.log('房间  ==>  '+JSON.stringify(room.roomID) +' ==> 需要加入机器人')
+            // console.log('房间  ==>  '+JSON.stringify(room.roomID) +' ==> 需要加入机器人')
             // console.log('房间  ==>  '+JSON.stringify(robotmsg[0].nick_name) +' ==> 需要加入机器人')
          
-            robot = gameContorller.createRobot(robotmsg[0],socket,that);
+            // robot = gameContorller.createRobot(robotmsg[0],socket,that);
             
-            robot.isReady = true;
-            robot.isoccupy = true;
-            robot.isOnLine = false;
+            // robot.isReady = true;
+            // robot.isoccupy = true;
+            // robot.isOnLine = false;
            
-            gameContorller.joinRoom(room.roomID,robot,(err,robotdata)=>{
-                if(err){
-                    console.log(err)
-                }else{
-                    console.log('加入成功')
-                    console.log('房间玩家列表  ==>  '+room.getPlayerList().length)
-                    robot.setRoom(robotdata.room)
-                    console.log(JSON.stringify(robot.getRoom()))
-                    room.playerReady(robot);
-                }
-            });
+            // gameContorller.joinRoom(room.roomID,robot,(err,robotdata)=>{
+            //     if(err){
+            //         console.log(err)
+            //     }else{
+            //         console.log('加入成功')
+            //         console.log('房间玩家列表  ==>  '+room.getPlayerList().length)
+            //         robot.setRoom(robotdata.room)
+            //         console.log(JSON.stringify(robot.getRoom()))
+            //         room.playerReady(robot);
+            //     }
+            // });
 
 
 
-            robot1 = gameContorller.createRobot(robotmsg[1],socket,that);
+            // robot1 = gameContorller.createRobot(robotmsg[1],socket,that);
            
-            robot1.isReady = true;
-            robot1.isoccupy = true;
-            robot1.isOnLine = false;
+            // robot1.isReady = true;
+            // robot1.isoccupy = true;
+            // robot1.isOnLine = false;
      
-            gameContorller.joinRoom(room.roomID,robot1,(err,robotdata)=>{
-                if(err){
-                    console.log(err)
-                }else{
-                    console.log('加入成功')
-                    console.log('房间玩家列表  ==>  '+room.getPlayerList().length)
-                    robot1.setRoom(robotdata.room)
-                    room.playerReady(robot1);
-                }
-            })
+            // gameContorller.joinRoom(room.roomID,robot1,(err,robotdata)=>{
+            //     if(err){
+            //         console.log(err)
+            //     }else{
+            //         console.log('加入成功')
+            //         console.log('房间玩家列表  ==>  '+room.getPlayerList().length)
+            //         robot1.setRoom(robotdata.room)
+            //         room.playerReady(robot1);
+            //     }
+            // })
 
-            room.houseManagerStartGame(palyer,(err,data)=>{
-                if(err){
+            // room.houseManagerStartGame(palyer,(err,data)=>{
+            //     if(err){
 
-                }else{
-                    console.log('开始游戏')
-                }
+            //     }else{
+            //         console.log('开始游戏')
+            //     }
                 
 
-            });
+            // });
 
             
-            let roomPlayerList = room.getPlayerList();
-            for(let i=0;i<roomPlayerList.length;i++){
-                if(!roomPlayerList[i].isrobot){
-                    let playerCards = roomPlayerList[i].cards;
-                    let cards = playerCards;
-                    // for(let i=0;i<room.buttonCards.length;i++){
-                    //     cards.push(room.buttonCards[i])
-                    //     console.log('显示牌组 ==> '+ JSON.stringify(cards))
-                    // }
-                    splitPlayerCards(cards);
-                    console.log('玩家 ==> 牌组 ==>  :' + JSON.stringify( roomPlayerList[i].cards))
-                }else{
-                    console.log('AI_Robot_'+ i +' ==> 牌组 ==>  :' + JSON.stringify( roomPlayerList[i].cards))
-                }
-            }
+            // let roomPlayerList = room.getPlayerList();
+            // for(let i=0;i<roomPlayerList.length;i++){
+            //     if(!roomPlayerList[i].isrobot){
+            //         let playerCards = roomPlayerList[i].cards;
+            //         let cards = playerCards;
+            //         // for(let i=0;i<room.buttonCards.length;i++){
+            //         //     cards.push(room.buttonCards[i])
+            //         //     console.log('显示牌组 ==> '+ JSON.stringify(cards))
+            //         // }
+            //         splitPlayerCards(cards);
+            //         console.log('玩家 ==> 牌组 ==>  :' + JSON.stringify( roomPlayerList[i].cards))
+            //     }else{
+            //         console.log('AI_Robot_'+ i +' ==> 牌组 ==>  :' + JSON.stringify( roomPlayerList[i].cards))
+            //     }
+            // }
            
            
             
             if(cb){
-                cb(null,'robot ==> createRobot success')
+                cb(null,robotmsg)
             }
         }
     })

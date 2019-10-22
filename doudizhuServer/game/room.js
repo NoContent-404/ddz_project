@@ -71,8 +71,8 @@ module.exports = function (spec, player) {
     let _notPushCardNumber = 2;   //有几个玩家选择不出牌
     let _canRobPlayer = undefined;  //  记录是谁能抢地主
     let _canPutCardPlayer = undefined;  //  能出牌玩家
-
-    let _robMaterNum = undefined;
+    let _recordrobMaterNum = 0;     //  记录抢地主次数
+    // let _robMaterNum = undefined;
 
 
  
@@ -135,7 +135,7 @@ module.exports = function (spec, player) {
                     for (let i = _playerList.length - 1; i >= 0; i--) {
                         _robMaterPlayerList.push(_playerList[i]);
                     }
-                    
+                    _robMaterPlayerList.push(_playerList[_playerList.length - 1]);
                 }
 
                 turnPlayerRobMater();
@@ -423,7 +423,12 @@ module.exports = function (spec, player) {
             
         } else if (value === 'no-ok') { //  不抢
             console.log('rob master no ok');
-
+            _recordrobMaterNum++;
+            if(_recordrobMaterNum === 3){
+                //  通知客户端没有玩家抢地主，重新发牌
+                console.log('没有玩家抢地主！~');
+                return;
+            }
         }
         
 
@@ -804,6 +809,9 @@ module.exports = function (spec, player) {
                 console.log('提示牌组  = ' + JSON.stringify(cardsList) );
                 if(player.accountID === _canPutCardPlayer.accountID){
                     if(cardsList.length !== 0){
+
+                        if(player.isrobot){ //  机器人出牌
+                            
                         let cardsValue;
 
                         let robot ;
@@ -838,6 +846,7 @@ module.exports = function (spec, player) {
                             
                         }
 
+                    }
 
 
                             

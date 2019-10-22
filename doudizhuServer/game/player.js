@@ -100,6 +100,9 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
     //     );
     // } 
     
+    
+
+
 
     _socket.on('notify', (notifyData)=>{
 
@@ -149,7 +152,12 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                 }
                 break;
             case 'ready':   //   准备
-                that.isReady = true;
+                if(that.isReady){
+                    that.isReady = false;
+                }else{
+                    that.isReady = true;
+                }
+                
                 if (_room){
                     _room.playerReady(that);
                 }
@@ -171,16 +179,60 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                 let addrobot = notifyData.data.isrobot;
                 console.log('确认添加机器人 ==> '+JSON.stringify(notifyData.data))
                 if (_room){
+                    var get_result = function(callback) {
                         that._robot.selectRobot(that,addrobot,_socket,_room,(err,data)=>{
                             if(err){
                                 console.log(err)
                             }else{
-                                
-                                console.log('查询到的机器人信息 ==> '+JSON.stringify(data))
+                                callback(data);
+                                // console.log('查询到的机器人信息 ==> '+JSON.stringify(data))
                             }
                         });
+
+                    }
                     
                 }
+
+                get_result(function(data){
+                    console.log('数据库数据 = ' + JSON.stringify(data) )
+                    
+                    let Playernum = _room.getPlayerList();
+                        for(let j in data){
+                           
+                            if(data[j].isrobot && Playernum.length !== 3){
+                            console.log('数据库数据 = ' + JSON.stringify(data[j]) )
+                            let robot = gameContorller.createRobot(data[j],_socket,that._robot);
+                            robot.isReady = true;
+                            robot.isoccupy = true;
+                            robot.isOnLine = false;
+                            gameContorller.joinRoom(_room.roomID,robot,(err,robotdata)=>{
+                            if(err){
+                                console.log(err)
+                            }else{
+                                console.log('加入成功')
+                                console.log('房间玩家列表  ==>  '+_room.getPlayerList().length)
+                                robot.setRoom(_room)
+                                console.log(JSON.stringify(robot.getRoom()))
+                                _room.playerReady(robot);
+                            }
+                            });
+
+                            }
+                     }
+
+                     _room.houseManagerStartGame(that, (err, data)=>{
+                        if (err){
+                            notify('start_game', {err: err}, callBackIndex);
+                        }else {
+                            notify('start_game', {data: data}, callBackIndex);
+
+                        }
+                    });
+                    
+
+                    console.log(_room.getPlayerList().length);
+                    
+                })
                 break;
 
 
@@ -243,6 +295,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
              
             console.log('Leave room data = ' + JSON.stringify(notifyData.data));
             if(_room){
+                
                 gameContorller.leaveRoom(_room,notifyData.data, that ,(err, data)=>{
                     if (err){
                         notify('leave_room', {err: err}, callBackIndex);
