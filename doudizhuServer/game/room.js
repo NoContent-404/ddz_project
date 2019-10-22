@@ -71,8 +71,8 @@ module.exports = function (spec, player) {
     let _notPushCardNumber = 2;   //有几个玩家选择不出牌
     let _canRobPlayer = undefined;  //  记录是谁能抢地主
     let _canPutCardPlayer = undefined;  //  能出牌玩家
-    let _recordrobMaterNum = 0;     //  记录抢地主次数
-    // let _robMaterNum = undefined;
+    let _recordrobMaterList = [];     //  记录抢地主次数
+    let _robMaterNum = 0;
 
 
  
@@ -135,7 +135,7 @@ module.exports = function (spec, player) {
                     for (let i = _playerList.length - 1; i >= 0; i--) {
                         _robMaterPlayerList.push(_playerList[i]);
                     }
-                    _robMaterPlayerList.push(_playerList[_playerList.length - 1]);
+                
                 }
 
                 turnPlayerRobMater();
@@ -419,16 +419,29 @@ module.exports = function (spec, player) {
     that.playerRobStateMaster = function (player, value) {  //  抢玩家抢地主的状态
         if (value === 'ok') {   //  抢
             console.log(' rob master ok');
-            _master = player
+            _recordrobMaterList.push(player);
+            
+
+            if(_robMaterNum === 3 ){
+                if(_recordrobMaterList[0].accountID === player.accountID){
+                    _master = player
+                }
+                
+                
+            }
+            _robMaterNum++
             
         } else if (value === 'no-ok') { //  不抢
             console.log('rob master no ok');
-            _recordrobMaterNum++;
-            if(_recordrobMaterNum === 3){
-                //  通知客户端没有玩家抢地主，重新发牌
-                console.log('没有玩家抢地主！~');
-                return;
+            if(_robMaterNum === 3 ){
+                if(_recordrobMaterList[0].accountID === player.accountID){
+                    _master = _recordrobMaterList[_recordrobMaterList.length - 1]
+                }
+                
+                
             }
+            _robMaterNum++;
+          
         }
         
 
@@ -455,7 +468,29 @@ module.exports = function (spec, player) {
     const turnPlayerRobMater = function () {
         if (_robMaterPlayerList.length === 0) {
             console.log('抢地主结束');
-            if( _master === undefined){
+            if(_recordrobMaterList.length === 1){
+                _master = _recordrobMaterList[0]
+            }else{
+
+                if(_master === undefined && _recordrobMaterList.length>0){
+                    let player = _recordrobMaterList[0];
+                    _canRobPlayer = player; //  记录
+                    if(player.isOnLine === false  || player.isTrusteeship === true){    //  判断玩家是否掉线/托管
+                        console.log('no OnLine  =' +player.isOnLine)
+                        console.log('player trusteeship = ' + player.isTrusteeship)
+                        that.collocation(player);
+                        return;
+                    }
+    
+                    console.log('可抢地主玩家信息 = ' + JSON.stringify(player))
+                    for (let i = 0; i < _playerList.length; i++) {  //  发送玩家能抢地主的状态
+                        _playerList[i].sendPlayerCanRobMater(player.accountID);
+                    }
+                    return;
+                }
+               
+            }
+            if( _master === undefined && _robMaterNum ===3 && _recordrobMaterList.length ===0){
                 console.log('玩家没有抢地主');
                 //  告诉客户端每个玩家都要销毁节点，让客户端重新发送发牌请求
                 // for(let i = 0;i<_playerList.length; i++){
@@ -896,59 +931,6 @@ module.exports = function (spec, player) {
        }
 
 
-//        if(player.isrobot === true){ //  AI 出牌
-       
-//         console.log('AI_抢地主阶段')
-//         if(_state > 1 && _state < 4){
-//             if(_canRobPlayer.accountID === player.accountID){   //  让AI不抢地主
-//                 for(let i=0;i<_playerList.length;i++){
-//                     _playerList[i].sendPlayerRobStateMater(player.accountID,'no-ok');
-//                 }
-//                 turnPlayerRobMater();   //  轮到下一个玩家抢
-//             }
-//             console.log('进入抢地主状态');
-//             return;
-//         }
-
-//         if(_state > 2){ //  AI_出牌阶段
-//             // let lostPlayerCardList = player.cards;
-//             if(_currentPlayerPushCardList !== undefined ){
-//                 let lodCardsValue = _carder.isCanPushCards(_currentPlayerPushCardList);
-//                 let robotCard = getMethod(lodCardsValue);
-//             }
-
-
-            
-//             if(_currentPlayerPushCardListPlayer === undefined){
-
-//             }else{
-//                 if(_currentPlayerPushCardListPlayer.accountID === player.accountID){
-//                     _currentPlayerPushCardList = undefined;
-//                 }
-//             }
-            
-//              cardsList = _carder.getTipsCardsList(_currentPlayerPushCardList, lostPlayerCardList);  //  获取提示牌组
-//             console.log('提示牌组  = ' + JSON.stringify(cardsList) );
-//             if(player.accountID === _canPutCardPlayer.accountID){
-//                 if(cardsList.length !== 0){
-                 
-//                     if(player.isTrusteeship === true){
-//                         player.sendPlayerTrusteeshipCard(cardsList[0]);
-//                     }
-//                     that.playerPushCard(player,cardsList[0]);
-//                     if(cb){
-//                         if(cb){
-//                             cb(null,cardsList[0]);
-//                         }
-//                     }
-//                     return;
-//                 }
-//                 that.playerPushCard(player,cardsList,cb);
-              
-//             }
-//         }
-//    }
-       
 
     };
 /***********************************************  自动出牌end   ********************** */
