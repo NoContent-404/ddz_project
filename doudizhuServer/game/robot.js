@@ -90,8 +90,6 @@ that.selectRobot = function(palyer,data,socket,room,cb){
                     //     cards.push(room.buttonCards[i])
                     //     console.log('显示牌组 ==> '+ JSON.stringify(cards))
                     // }
-
-
                     splitPlayerCards(cards);
                     console.log('玩家 ==> 牌组 ==>  :' + JSON.stringify( roomPlayerList[i].cards))
                 }else{
@@ -124,7 +122,7 @@ that.selectRobot = function(palyer,data,socket,room,cb){
 
 
 
- const splitPlayerCards = function(playerCards,cardsValue){
+ const splitPlayerCards = function(playerCards,cardsValue,PlayerPushCardList){
     playerCards.sort((a, b) => {    //  排序
         return a.value - b.value;
     });
@@ -279,9 +277,8 @@ that.selectRobot = function(palyer,data,socket,room,cb){
      */
 
     let scroll = getScrollCardsList(6,newSola);
-    if(scroll.length>0){
-        console.log('有顺子' +scroll.length);
-    }
+    console.log('有顺子' +scroll.length);
+    
    
 
 
@@ -289,20 +286,14 @@ that.selectRobot = function(palyer,data,socket,room,cb){
      * 获取连对
      */
     let doubleScroll = getDoubleScorllCardsList(newDoubleList);
-    if(doubleScroll.length>0){
-        console.log('有连对' +doubleScroll.length);
-    }
-
-
-
-
+    console.log('有连对' +doubleScroll.length);
+    
 
     /**
      * 拆分3带1
      */
     let threeWithOne = getThreeWithOne(threeCardsList,newSola);
     console.log('3带1 ==> ' + threeWithOne);
-    console.log('3 ==> ' + threeCardsList);
 
 
 
@@ -310,10 +301,27 @@ that.selectRobot = function(palyer,data,socket,room,cb){
      * 拆分3带2
      */
     let threeWithDouble = getThreeWithDouble(threeCardsList,doubleList);
+    console.log('3带2 ==> ' + threeWithOne);
 
 
 
+    /**
+     * 拆分飞机
+     */
+    let plane = getPlane(playerCards,PlayerPushCardList);
 
+    /**
+     * 拆分飞机带单
+     */
+    let planeWithOne = getPlaneWithOne(plane,solaList,PlayerPushCardList);
+
+
+    /**
+     * 拆分飞机带对子
+     */
+    let planeWithTow = getPlaneWithTow(plane,doubleList,PlayerPushCardList);
+
+    
 
     let value ;
     if(cardsValue === undefined){
@@ -323,19 +331,19 @@ that.selectRobot = function(palyer,data,socket,room,cb){
     }
     //  返回牌组
     switch(value){
-        case 'One' : return solaList;
-        case 'Double' : return doubleList;
-        case 'Three' : return threeCardsList;
-        case 'Boom' : return fourBoom;
-        case 'ThreeWithOne' : return threeWithOne;
-        case 'ThreeWithTwo' : return threeWithDouble;
-        case 'Plane' : return ;
-        case 'PlaneWithOne' : return ;
-        case 'PlaneWithTwo' : return ;
-        case 'Scroll' : return scroll;
-        case 'DoubleScroll' : return doubleScroll;
-        case 'FourWithOne' : return ;
-        case 'fourWithTow' : return ;
+        case 'One' : return solaList;   //  单张
+        case 'Double' : return doubleList;  //  对子
+        case 'Three' : return threeCardsList;   //   三张
+        case 'Boom' : return fourBoom;  //  4炸弹
+        case 'ThreeWithOne' : return threeWithOne;  //  3带1
+        case 'ThreeWithTwo' : return threeWithDouble;   //  3带对子
+        case 'Plane' : return plane;     //  飞机
+        case 'PlaneWithOne' : return planeWithOne;  //  飞机带单张
+        case 'PlaneWithTwo' : return planeWithTow;  //  飞机带对子
+        case 'Scroll' : return scroll;  //  单顺
+        case 'DoubleScroll' : return doubleScroll;  //  连对
+        case 'FourWithOne' : return fourBoom;   //  4带1
+        case 'FourWithTow' : return fourBoom;   //  4带对子
 
 
         default : return solaList;
@@ -567,10 +575,167 @@ const getThreeWithDouble = function (three, Double) {
         } 
     }
     return list;
-}
+};
 
 
 
+
+    const getPlaneMinValue = function (cardsA) {    //  获取最小值
+        let map = {}; //，3，3，3，4，4，4
+        for (let i = 0 ; i < cardsA.length ; i ++){
+            if (map.hasOwnProperty(cardsA[i].value)){
+                map[cardsA[i].value].push(cardsA[i]);
+            }else {
+                map[cardsA[i].value] = [cardsA[i]];
+            }
+        }
+        // {
+        //     '3': [card, card, card],
+        //     '4': [card, card ,card]
+        // }
+        let minNum = 100;
+        for (let  i in map){
+            if (Number(i) < minNum){
+                minNum = Number(i);
+            }
+        }
+        return minNum;
+    };
+
+    //  飞机
+    const getPlane = function(cards,cardsA){
+        let list = getRepeatCardsList(3,cards);
+        
+
+        let map = {};
+        for (let i = 0 ; i < list.length ; i ++){
+            if (map.hasOwnProperty(list[i][0].value)){
+                // map[list[i][0].value].push(list[i]);
+            }else {
+                map[list[i][0].value] = list[i];
+            }
+        }
+        let keys = Object.keys(map);
+        keys.sort((a,b)=>{
+            return Number(a) - Number(b);
+        });
+
+
+        let lengthA = 0;
+        let num = 0;
+        if(cardsA !== undefined){
+        let listA = getRepeatCardsList(3,cardsA);
+         num =  getPlaneMinValue(cardsA);
+        for(let i in listA){
+            lengthA = lengthA + listA[i].length;
+        }
+        for(let i in keys){
+            if(keys[i] <= num){
+                keys.splice(i,1)
+            }
+        }
+
+
+        }
+        
+        let tempCardsList = [];
+        let l = [];
+        let cont = 0; 
+        for (let i = cont ; i < (keys.length); i ++){
+            if (Math.abs(Number(keys[i]) - Number(keys[i + 1])) !== 1){
+               
+                for (let j = cont ; j <=i + cont  ; j++){
+                    for(let k in map[keys[j]]){
+                        l.push(map[keys[j]][k]);
+                    }
+                    if(cardsA !== undefined){
+                        if(l.length === lengthA){
+                            tempCardsList.push(l);
+                            i=tempCardsList.length -1;
+                            cont = tempCardsList.length;
+                            l = [];
+                            break;
+                        }
+                    }
+                }
+
+                if(cardsA === undefined){
+                    cont = i+1;
+                    if(l.length>1){
+                        tempCardsList.push(l);
+                        l = [];
+                    }
+                }
+                
+
+            }
+        }
+        let cardsList = [];
+        if(cardsA !== undefined){
+           
+            for (let i = 0 ; i < tempCardsList.length ; i ++){
+                let valueB = getPlaneMinValue(tempCardsList[i]);
+                if (valueB > num){
+                    cardsList.push(tempCardsList[i]);
+                }
+            }
+
+
+        }else{
+            cardsList.push(tempCardsList[0])
+        }
+        
+        return cardsList;
+    }
+
+
+    const getPlaneWithOne = function(myCards,mySolaList,PlayerPushCardList){ //  飞机带单
+       let list = [];
+        if(mySolaList.length === 0 || myCards.length === 0){
+            return list;
+        }
+
+       
+        let solaList =  JSON.parse(JSON.stringify(mySolaList)); //  复制数组  
+        let cards =  JSON.parse(JSON.stringify(myCards)); //  复制数组 
+        
+        let cardsNum = cards[0].length / 3;
+            if(solaList.length >= cardsNum){
+                for(let i=0;i<cardsNum;i++){
+                    cards[0].push(solaList[i][0]);
+                }
+                list = cards[0];
+            }
+            return list;
+    
+
+        
+    };
+
+
+
+    const getPlaneWithTow = function(myCards,myDoubleList,PlayerPushCardList){ //  飞机带单
+        let list = [];
+        if(myDoubleList.length === 0 || myCards.length === 0){
+            return list;
+        }
+ 
+        
+        let doubleList =  JSON.parse(JSON.stringify(myDoubleList)); //  复制数组  
+        let cards =  JSON.parse(JSON.stringify(myCards)); //  复制数组 
+         
+        let cardsNum = cards[0].length / 3;
+        if(doubleList.length >= cardsNum){
+            for(let i=0;i<cardsNum;i++){
+                for(let j=0;j<2;j++){
+                    cards[0].push(doubleList[i][j]);
+                }
+            }
+            list = cards[0];
+        }
+        return list;
+ 
+     };
 
 
 
@@ -589,6 +754,7 @@ that.spliceCards = splitPlayerCards;
 that.getRorbotCards = getCardsValue;
 
 return that;
+
 }
 
 

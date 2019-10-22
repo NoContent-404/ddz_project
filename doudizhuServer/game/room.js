@@ -804,31 +804,39 @@ module.exports = function (spec, player) {
                 console.log('提示牌组  = ' + JSON.stringify(cardsList) );
                 if(player.accountID === _canPutCardPlayer.accountID){
                     if(cardsList.length !== 0){
-                        // let cardsValue;
+                        let cardsValue;
 
-                        // let robot ;
-                        // if(_currentPlayerPushCardList !== undefined){
-                        //      cardsValue = _carder.isCanPushCards(_currentPlayerPushCardList); //  返回我出的牌的类型    三张：Three
-                        // }
+                        let robot ;
+                        if(_currentPlayerPushCardList !== undefined){
+                             cardsValue = _carder.isCanPushCards(_currentPlayerPushCardList); //  返回我出的牌的类型    三张：Three
+                        }
                         
-                        // // robot = player._robot.spliceCards(player.cards,cardsValue);
-                        // cardsList = [];
+                        robot = player._robot.spliceCards(player.cards,cardsValue,_currentPlayerPushCardList);
+                        cardsList = [];
 
 
-                        // if(_currentPlayerPushCardList !== undefined){
+                        if(_currentPlayerPushCardList !== undefined){
                           
-                        //     let result;
-                        //     if(robot.length>0){
+                            let result;
+                            if(robot.length>0){
                                 
-                        //         for(let i in robot){
-                        //              result = _carder.compare(robot[i], _currentPlayerPushCardList);
-                        //             if(result === true){
+                                for(let i in robot){
+                                     result = _carder.compare(robot[i], _currentPlayerPushCardList);
+                                    if(result === true){
 
-                        //                 cardsList.push(robot[i]);
-                        //                 break;
-                        //             }
-                        //         }
-                        //     }
+                                        cardsList.push(robot[i]);
+                                        break;
+                                    }
+                                }
+                            }
+                        }else{
+                            if(robot.length>0){
+                                cardsList.push(robot[0]);
+                            }else{
+                                cardsList = [];
+                            }
+                            
+                        }
 
 
 
@@ -852,9 +860,8 @@ module.exports = function (spec, player) {
                            
                             return;
                         }
-
-                        // cardsList.push(robot[0]);
-                        that.playerPushCard(player,cardsList);
+                        cardsList = [];
+                        that.playerPushCard(player,cardsList,cb);
                         if(cb){
                             if(cb){
                                 cb(null,cardsList[0]);

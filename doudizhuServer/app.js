@@ -21,7 +21,7 @@ const client = redis.createClient(6379,'192.168.1.99');
 
 
 
-app.use(cookieParser());
+app.use(cookieParser());    
 app.use('/login', function (req,res) {
     var arg = url.parse(req.url, true).query; 
     console.log( arg.code)
