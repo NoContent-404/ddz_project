@@ -1192,23 +1192,45 @@ module.exports = function () {
     that.tipsDouble = function (cardsA, cardsB) {   //  提示对子
 
         let list = getRepeatCardsList(2, cardsB);
+        
+ 
         let cardsList = [];
         for (let i = 0; i < list.length; i++) {
             if (list[i][0].value > cardsA[0].value) {
                 cardsList.push(list[i]);
             }
         }
-        console.log('cards list = ' + JSON.stringify(cardsList));
-        let kingBoom = getKingBoom(cardsB);
-        if (kingBoom !== false) {
-            cardsList.push(kingBoom);
+
+        let threeList = getRepeatCardsList(3, cardsB);
+
+        for(let i = 0;i<threeList.length;i++){
+            cardsList.push(threeList[i][0]);
+            cardsList.push(threeList[i][1]);
         }
+
+
         let fourBoomList = getFourBoom(cardsB);
+        for(let i = 0;i<fourBoomList.length;i++){
+            cardsList.push(fourBoomList[i][0]);
+            cardsList.push(fourBoomList[i][1]);
+        }
+
+
+
+
+        console.log('cards list = ' + JSON.stringify(cardsList));
+        
+   
         if (fourBoomList !== false) {
             // cardsList.push(fourBoom);
             for (let i = 0; i < fourBoomList.length; i++) {
                 cardsList.push(fourBoomList[i]);
             }
+        }
+
+        let kingBoom = getKingBoom(cardsB);
+        if (kingBoom !== false) {
+            cardsList.push(kingBoom);
         }
         return cardsList;
     };
@@ -1375,7 +1397,7 @@ module.exports = function () {
     };
 
 
-    that.tipsFourWithOne = function (cardsA, cardsB) { //  提示4带1/4带2
+    that.tipsFourWithOne = function (cardsA, cardsB) { //  提示4带1
         //3,3,3,3,4
         //3,3,3,3,4,4
         let oneCard= getRepeatCardsList(1, cardsB);
@@ -1383,7 +1405,7 @@ module.exports = function () {
         return getFourWithNumCardsList(1, cardsA, cardsB);
 
     };
-    that.tipsFourWithTow = function (cardsA, cardsB) { //  提示4带2对子
+    that.tipsFourWithTow = function (cardsA, cardsB) { //  提示4带2
         //3,3,3,3,4,4,5,5
         //3,3,3,3,4,4,4,4
         return getFourWithNumCardsList(2, cardsA, cardsB);
