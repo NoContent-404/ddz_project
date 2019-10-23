@@ -193,15 +193,18 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                     
                 }
 
-                get_result(function(data){
+                get_result(async function(data){
+
+                    console.time('get_result')
                     console.log('数据库数据 = ' + JSON.stringify(data) )
                     
                     let Playernum = _room.getPlayerList();
+                    
                         for(let j in data){
                            
                             if(data[j].isrobot && Playernum.length !== 3){
                             console.log('数据库数据 = ' + JSON.stringify(data[j]) )
-                            let robot = gameContorller.createRobot(data[j],_socket,that._robot);
+                            let robot = await gameContorller.createRobot(data[j],_socket,that._robot);
                             robot.isReady = true;
                             robot.isoccupy = true;
                             robot.isOnLine = false;
@@ -219,7 +222,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
 
                             }
                      }
-
+                     
                      _room.houseManagerStartGame(that, (err, data)=>{
                         if (err){
                             notify('start_game', {err: err}, callBackIndex);
@@ -231,7 +234,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                     
 
                     console.log(_room.getPlayerList().length);
-                    
+                    console.timeEnd('get_result')
                 })
                 break;
 

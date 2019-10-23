@@ -490,7 +490,7 @@ module.exports = function () {
 
 
     const isFourWithOne = function (cardList) {    //  是否4带单张
-        if (cardList.length >= 5) {
+        if (cardList.length > 5) {
             let map = {};
             for (let i = 0; i < cardList.length; i++) {
                 if (map.hasOwnProperty(cardList[i].value)) {
@@ -526,7 +526,7 @@ module.exports = function () {
             }
 
             
-            if(fourCount === 1 && (oneCount === 2 || oneCount === 1) && towCount === 0|| (fourCount === 1 && towCount === 1 && oneCount === 0)){
+            if(fourCount === 1 && oneCount === 2  && towCount === 0|| (fourCount === 1 && towCount === 1 && oneCount === 0)){
                 return true;
             }else{
                 return false;
