@@ -109,7 +109,8 @@ module.exports = function (spec, player) {
             case RoomState.WaitingReady:
                 break;
             case RoomState.StartGame:
-                
+                 _recordrobMaterList = [];     //   记录已经抢地主的玩家列表
+                _robMaterNum = 0;   //  记录抢地主次数
                 for (let i = 0; i < _playerList.length; i++) {
                     _playerList[i].cards = [];
                     _playerList[i].sendGameStart();
@@ -341,7 +342,7 @@ module.exports = function (spec, player) {
                     }
                     _currentPlayerPushCardList = cards;
                     _currentPlayerPushCardListPlayer = player;
-                    sendPlayerPushCard(player, cards);  //  减少手牌
+                    sendPlayerPushCard(player, cards,cardsValue);  //  减少手牌
 
                     
                     if(player.cards.length === 0){
@@ -360,7 +361,7 @@ module.exports = function (spec, player) {
                         }
                         _currentPlayerPushCardList = cards;
                         _currentPlayerPushCardListPlayer = player;
-                        sendPlayerPushCard(player, cards);  //  减少手牌
+                        sendPlayerPushCard(player, cards,cardsValue);  //  减少手牌
 
                         console.log('玩家剩余手牌数229 = ' + JSON.stringify(player));
                         
@@ -406,9 +407,17 @@ module.exports = function (spec, player) {
             cb(null, cardsList);
         }
     };
-    const sendPlayerPushCard = function (player, cards) {   //  向客户端发送牌组及玩家的消息
+    const sendPlayerPushCard = function (player, cards,cardsValue) {   //  向客户端发送牌组及玩家的消息
         _notPushCardNumber = 0; 
         for (let i = 0; i < _playerList.length; i++) {
+
+            _playerList[i].sendPushCardType({
+                cardsValue : cardsValue,
+                cards: cards
+            })
+
+
+
             _playerList[i].sendPlayerPushCard({
                 accountID: player.accountID,
                 cards: cards
@@ -421,7 +430,7 @@ module.exports = function (spec, player) {
             console.log(' rob master ok');
             _recordrobMaterList.push(player);
             
-
+            _rate = _rate * 2;
             if(_robMaterNum === 3 ){
                 if(_recordrobMaterList[0].accountID === player.accountID){
                     _master = player
@@ -493,9 +502,9 @@ module.exports = function (spec, player) {
             if( _master === undefined && _robMaterNum ===3 && _recordrobMaterList.length ===0){
                 console.log('玩家没有抢地主');
                 //  告诉客户端每个玩家都要销毁节点，让客户端重新发送发牌请求
-                // for(let i = 0;i<_playerList.length; i++){
-                //     _playerList[i].sendNoMaster(_playerList[i].accountID);
-                // }
+                for(let i = 0;i<_playerList.length; i++){
+                    _playerList[i].sendNoMaster(_playerList[i].accountID);
+                }
                 // setState(RoomState.PushCard);   //  重新发牌
             }else{
                 changeMaster();

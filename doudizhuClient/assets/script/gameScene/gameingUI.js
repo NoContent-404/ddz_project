@@ -47,6 +47,10 @@ cc.Class({
 
 
 
+        global.socket.onPlayerPushCardType((data) => { //  托管出牌
+            console.log(' gggg ' + JSON.stringify(data) );
+            
+        });
 
 
 

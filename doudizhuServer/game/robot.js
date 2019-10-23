@@ -176,7 +176,7 @@ that.selectRobot = function(palyer,data,socket,room,cb){
         console.log('有炸弹 ==>' + fourBoom.length+'个'); 
     }
 
-
+   
      /**
      *    3.查看是否能够组成飞机，如果有则把飞机拆分出来（优先级:2）
      */
@@ -240,7 +240,7 @@ that.selectRobot = function(palyer,data,socket,room,cb){
      * 对子
      */
     let doubleList = getRepeatCardsList(2,playerCards);
-
+   
     let newDoubleList = [];
     for(let i in doubleList){
         for(let j=0;j<doubleList[i].length;j++){
@@ -279,7 +279,7 @@ that.selectRobot = function(palyer,data,socket,room,cb){
     let scroll = getScrollCardsList(6,newSola);
     console.log('有顺子' +scroll.length);
     
-   
+    
 
 
     /**
@@ -288,14 +288,14 @@ that.selectRobot = function(palyer,data,socket,room,cb){
     let doubleScroll = getDoubleScorllCardsList(newDoubleList);
     console.log('有连对' +doubleScroll.length);
     
-
+   
     /**
      * 拆分3带1
      */
     let threeWithOne = getThreeWithOne(threeCardsList,newSola);
     console.log('3带1 ==> ' + threeWithOne);
 
-
+    
 
     /**
      * 拆分3带2
@@ -303,25 +303,26 @@ that.selectRobot = function(palyer,data,socket,room,cb){
     let threeWithDouble = getThreeWithDouble(threeCardsList,doubleList);
     console.log('3带2 ==> ' + threeWithOne);
 
-
+    
 
     /**
      * 拆分飞机
      */
     let plane = getPlane(playerCards,PlayerPushCardList);
-
+    
     /**
      * 拆分飞机带单
      */
     let planeWithOne = getPlaneWithOne(plane,solaList,PlayerPushCardList);
-
+    
 
     /**
      * 拆分飞机带对子
      */
     let planeWithTow = getPlaneWithTow(plane,doubleList,PlayerPushCardList);
-
     
+    let canPushCardsList = getCanPushCardsList(kingBoom, fourBoom,threeCardsList,solaList,doubleList,
+        scroll,doubleScroll,threeWithOne,threeWithDouble,plane,planeWithOne,planeWithTow);
 
     let value ;
     if(cardsValue === undefined){
@@ -345,8 +346,7 @@ that.selectRobot = function(palyer,data,socket,room,cb){
         case 'FourWithOne' : return fourBoom;   //  4带1
         case 'FourWithTow' : return fourBoom;   //  4带对子
 
-
-        default : return solaList;
+        default : return canPushCardsList;
     }
 
 
@@ -737,7 +737,58 @@ const getThreeWithDouble = function (three, Double) {
  
      };
 
+const getCanPushCardsList = function(kingBoom, fourBoom,threeCardsList,solaList,doubleList,scroll,doubleScroll,
+    threeWithOne,threeWithDouble,plane,planeWithOne,planeWithTow){
+  
+    if( solaList.length !== 0){     //  单顺
+        return  solaList;
+    }
+    
+    if( doubleScroll.length !== 0){     //  双顺
+        return  doubleScroll;
+    }
 
+    if( planeWithOne.length !== 0){     //  飞机带单张
+        return  planeWithOne;
+    }
+
+    if( planeWithTow.length !== 0){     //  飞机带对子
+        return  planeWithTow;
+    }
+
+    if( plane.length !== 0){        //  飞机
+        return  plane;
+    }
+
+
+    if( threeWithOne.length !== 0){     //  三带单
+        return  threeWithOne;
+    }
+    if( threeWithDouble.length !== 0){      //  三带对子
+        return  threeWithDouble;
+    }
+
+    if( threeCardsList.length !== 0){   //  三张
+        return  threeCardsList;
+    }
+
+    if( doubleList.length !== 0){   //  对子
+        return  doubleList;
+    }
+
+    if( scroll.length !== 0){   //  单张
+        return  scroll;
+    }
+
+
+    if( fourBoom.length !== 0){ //  炸弹
+        return  fourBoom;
+    }
+
+    if( kingBoom.length !== 0){ //  火箭
+        return  kingBoom;
+    }
+};
 
 // };
 const getCardsValue = function (cardList) {

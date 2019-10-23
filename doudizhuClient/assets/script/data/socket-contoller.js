@@ -170,6 +170,19 @@ const SocketController  = function () {
         _event.on('trusteeship-card', cb);
     };
 
+
+
+    that.onPlayerPushCardType = function (cb) {
+        _event.on('player-push-card-type', cb);
+    };
+
+
+
+
+
+
+
+
     
 
     that.onPlayerReady = function (cb) {

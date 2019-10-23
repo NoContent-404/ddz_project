@@ -437,6 +437,15 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         _room = data;
     }
 
+
+
+    that.sendPushCardType = function(data) {    //  发送出牌的类型
+        notify('player-push-card-type',data);
+    }
+
+
+
+
     that.sendPlayerPushCard = function (data) { //  减少手牌数
         
         let accountID = data.accountID;     //  
