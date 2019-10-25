@@ -35,7 +35,7 @@ exports.selectPlayer = function(data,player,cb){  //  搜索玩家
                     player.isTrusteeship =  rpList[j].isTrusteeship;
 
                     rpList.splice(j,1,player);
-                    console.log('ssssssss' + JSON.stringify(player))
+                    // console.log('ssssssss' + JSON.stringify(player))
                     _playerList.splice(j,1,player);
                     // console.log('你在房间 = ' + _roomList[i].roomID);
                     // console.log('你在房间的房间信息 = ' + JSON.stringify(_roomList[i]) );
@@ -151,6 +151,7 @@ exports.joinRoom = function (data, player, cb) {
             return;
 
         }
+  
     }
     if (cb) {
         cb('no have this room' + data);

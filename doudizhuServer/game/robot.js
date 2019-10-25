@@ -346,7 +346,9 @@ that.selectRobot = function(palyer,data,socket,room,cb){
         case 'FourWithOne' : return fourBoom;   //  4带1
         case 'FourWithTow' : return fourBoom;   //  4带对子
 
-        default : return canPushCardsList;
+        default :
+        console.log('Robot 自动出牌数据 =》' + canPushCardsList)
+        return canPushCardsList;
     }
 
 
@@ -660,10 +662,14 @@ const getThreeWithDouble = function (three, Double) {
                 }
 
                 if(cardsA === undefined){
-                    cont = i+1;
-                    if(l.length>1){
+                    
+                    if(l.length>=6){
+                        cont = i+1;
                         tempCardsList.push(l);
                         l = [];
+                    }else{
+                        l = [];
+                     
                     }
                 }
                 
@@ -671,7 +677,7 @@ const getThreeWithDouble = function (three, Double) {
             }
         }
         let cardsList = [];
-        if(cardsA !== undefined){
+        if(cardsA !== undefined ){
            
             for (let i = 0 ; i < tempCardsList.length ; i ++){
                 let valueB = getPlaneMinValue(tempCardsList[i]);
@@ -682,9 +688,12 @@ const getThreeWithDouble = function (three, Double) {
 
 
         }else{
-            cardsList.push(tempCardsList[0])
+            if(tempCardsList.length !== 0){
+                cardsList.push(tempCardsList[0])
+            }
+            
         }
-        
+        console.log('飞机数据 =》' + cardsList)
         return cardsList;
     }
 
@@ -706,6 +715,7 @@ const getThreeWithDouble = function (three, Double) {
                 }
                 list = cards[0];
             }
+            console.log('飞机数据带单 =》' + list)
             return list;
     
 
@@ -716,17 +726,21 @@ const getThreeWithDouble = function (three, Double) {
 
     const getPlaneWithTow = function(myCards,myDoubleList,PlayerPushCardList){ //  飞机带单
         let list = [];
-        if(myDoubleList.length === 0 || myCards.length === 0){
+        if(myDoubleList.length === 0 || myCards.length === 0 ){
             return list;
         }
  
         
         let doubleList =  JSON.parse(JSON.stringify(myDoubleList)); //  复制数组  
         let cards =  JSON.parse(JSON.stringify(myCards)); //  复制数组 
-         
+        
         let cardsNum = cards[0].length / 3;
-        if(doubleList.length >= cardsNum){
-            for(let i=0;i<cardsNum;i++){
+        if(myCards.length<2){
+            return list;
+        }
+        
+        if(doubleList.length >= myCards.length){
+            for(let i=0;i<myCards.length;i++){
                 for(let j=0;j<2;j++){
                     cards[0].push(doubleList[i][j]);
                 }
@@ -741,51 +755,63 @@ const getCanPushCardsList = function(kingBoom, fourBoom,threeCardsList,solaList,
     threeWithOne,threeWithDouble,plane,planeWithOne,planeWithTow){
   
     if( solaList.length !== 0){     //  单顺
+        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
         return  solaList;
     }
     
     if( doubleScroll.length !== 0){     //  双顺
+        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
         return  doubleScroll;
     }
 
     if( planeWithOne.length !== 0){     //  飞机带单张
+        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
         return  planeWithOne;
     }
 
-    if( planeWithTow.length !== 0){     //  飞机带对子
+    if(  planeWithTow.length !== 0){     //  飞机带对子
+        console.log('robot 自动飞机带对子出牌 =》' +JSON.stringify(solaList) )
         return  planeWithTow;
     }
 
     if( plane.length !== 0){        //  飞机
+        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
         return  plane;
     }
 
 
     if( threeWithOne.length !== 0){     //  三带单
+        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
         return  threeWithOne;
     }
     if( threeWithDouble.length !== 0){      //  三带对子
+        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
         return  threeWithDouble;
     }
 
     if( threeCardsList.length !== 0){   //  三张
+        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
         return  threeCardsList;
     }
 
     if( doubleList.length !== 0){   //  对子
+        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
         return  doubleList;
     }
 
     if( scroll.length !== 0){   //  单张
+        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
         return  scroll;
     }
 
 
     if( fourBoom.length !== 0){ //  炸弹
+        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
         return  fourBoom;
     }
 
     if( kingBoom.length !== 0){ //  火箭
+        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
         return  kingBoom;
     }
 };

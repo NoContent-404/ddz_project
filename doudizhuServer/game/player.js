@@ -481,6 +481,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                 }
             }else{
                 _room.houseManagerGameEnd(accountID);
+                return;
             }
            
         }
