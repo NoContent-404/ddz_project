@@ -158,13 +158,43 @@ exports.joinRoom = function (data, player, cb) {
     }
 };
 
+exports.quickToJoin = function (player,cb) {
+    console.log('快速开始')
+    for(let i=0,len = _roomList.length ; i<len ; i++){
+        let room = _roomList[i];
+        if(room.getPlayerCount() !== 3){
+            room.joinPlayer(player);
+            if (cb) {
+                cb(null, {
+                    room: room,
+                    data: {bottom: room.bottom, rate: room.rate}
+                });
+            }
+            return;
+        }
+    }
+
+    
+    let room = Room({rate :"rate_1"}, player);
+
+    _roomList.push(room);
+    if (cb) {
+        cb(null,{
+            msg : 'create',
+            roomID : room.roomID
+            
+        } );
+    }
+
+}
+
 
 exports.leaveRoom = function(myRoom, data ,player, cb){
 
     console.log('离开房间，返回大厅')
     for (let i = 0; i < _roomList.length; i++) {
         
-        console.log('我的房间ID类型'+ typeof myRoom.roomID)
+        // console.log('我的房间ID类型'+ typeof myRoom.roomID)
         if (_roomList[i].roomID === myRoom.roomID) {
             _roomList[i].playerLeave(player);
         }

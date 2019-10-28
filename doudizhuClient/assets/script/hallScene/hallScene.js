@@ -66,9 +66,62 @@ cc.Class({
                 createRoom.parent = this.node;
                 break;
             case 'join_room':
-                console.log('join room');
-                let joinRoom = cc.instantiate(this.joinRoomPrefab);
-                joinRoom.parent = this.node;
+
+
+                    global.socket.requestQuickJoinRoom((err, data)=>{
+                        if (err){
+                            console.log('err = ' + err);
+    
+                            let node = cc.instantiate(this.alertPrefab);
+                            node.parent = this.node;
+                            node.getComponent('alertLabelPrefab').initWithOK(err, ()=>{
+                                this.roomIDStr = '';
+                            });
+    
+                        }else {
+                            console.log(JSON.stringify(data))
+                            if(data.data.msg !== undefined){
+                                console.log('create room = ' + JSON.stringify(data));
+                                let roomID = data.data.roomID;
+                                global.socket.requestJoinRoom(roomID, (err, data)=>{
+                                    if (err){
+                                        console.log('err = ' + err);
+                                    }else {
+                                        // {"data":{"bottom":10,"rate":2}}
+                                        console.log('join room =' + JSON.stringify(data));
+                                        global.playerData.bottom = data.data.bottom;
+                                        global.playerData.rate = data.data.rate;
+                                        cc.director.loadScene('gameScene');
+                                    }
+                                });
+                                return;
+                            }
+                            
+                            // {"data":{"bottom":10,"rate":2}}
+                            console.log('join room =' + JSON.stringify(data));  
+                            global.playerData.bottom = data.data.bottom;
+                            global.playerData.rate = data.data.rate;
+                            cc.director.loadScene('gameScene');
+                        }
+                    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                // console.log('join room');
+                // let joinRoom = cc.instantiate(this.joinRoomPrefab);
+                // joinRoom.parent = this.node;
                 break;
             default:
                 break;

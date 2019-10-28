@@ -6,7 +6,7 @@ const Carder = require('./carder');
 module.exports = function(){
     let that ={};
 
-    that.kingBoom = {};
+    // that.kingBoom = {};
     
     let robot = undefined;
     let robot1 = undefined;
@@ -22,107 +22,24 @@ module.exports = function(){
 
 that.selectRobot = function(palyer,data,socket,room,cb){
  
-    
-    
     myDB.getPlayerInfoWithIsRobot(data,(err,robotmsg)=>{
         if(err){
             console.log(' robot.js ==>  db.js   查找机器人出现错误 = ' ,err);
         }else{
-            // console.log('robot.js ==>   db.js   查找机器人成功 = 机器人 ：' ,JSON.stringify(robotmsg))
-            
-            // console.log('房间  ==>  '+JSON.stringify(room.roomID) +' ==> 需要加入机器人')
-            // console.log('房间  ==>  '+JSON.stringify(robotmsg[0].nick_name) +' ==> 需要加入机器人')
-         
-            // robot = gameContorller.createRobot(robotmsg[0],socket,that);
-            
-            // robot.isReady = true;
-            // robot.isoccupy = true;
-            // robot.isOnLine = false;
-           
-            // gameContorller.joinRoom(room.roomID,robot,(err,robotdata)=>{
-            //     if(err){
-            //         console.log(err)
-            //     }else{
-            //         console.log('加入成功')
-            //         console.log('房间玩家列表  ==>  '+room.getPlayerList().length)
-            //         robot.setRoom(robotdata.room)
-            //         console.log(JSON.stringify(robot.getRoom()))
-            //         room.playerReady(robot);
-            //     }
-            // });
-
-
-
-            // robot1 = gameContorller.createRobot(robotmsg[1],socket,that);
-           
-            // robot1.isReady = true;
-            // robot1.isoccupy = true;
-            // robot1.isOnLine = false;
-     
-            // gameContorller.joinRoom(room.roomID,robot1,(err,robotdata)=>{
-            //     if(err){
-            //         console.log(err)
-            //     }else{
-            //         console.log('加入成功')
-            //         console.log('房间玩家列表  ==>  '+room.getPlayerList().length)
-            //         robot1.setRoom(robotdata.room)
-            //         room.playerReady(robot1);
-            //     }
-            // })
-
-            // room.houseManagerStartGame(palyer,(err,data)=>{
-            //     if(err){
-
-            //     }else{
-            //         console.log('开始游戏')
-            //     }
-                
-
-            // });
-
-            
-            // let roomPlayerList = room.getPlayerList();
-            // for(let i=0;i<roomPlayerList.length;i++){
-            //     if(!roomPlayerList[i].isrobot){
-            //         let playerCards = roomPlayerList[i].cards;
-            //         let cards = playerCards;
-            //         // for(let i=0;i<room.buttonCards.length;i++){
-            //         //     cards.push(room.buttonCards[i])
-            //         //     console.log('显示牌组 ==> '+ JSON.stringify(cards))
-            //         // }
-            //         splitPlayerCards(cards);
-            //         console.log('玩家 ==> 牌组 ==>  :' + JSON.stringify( roomPlayerList[i].cards))
-            //     }else{
-            //         console.log('AI_Robot_'+ i +' ==> 牌组 ==>  :' + JSON.stringify( roomPlayerList[i].cards))
-            //     }
-            // }
-           
-           
-            
             if(cb){
                 cb(null,robotmsg)
             }
         }
     })
 
-
-
-
-    
 };
 
 
 
+ const splitPlayerCards = function(cards,cardsValue,PlayerPushCardList){
 
+    let playerCards =  JSON.parse(JSON.stringify(cards)); //  复制数组  
 
-
-
-
-
-
-
-
- const splitPlayerCards = function(playerCards,cardsValue,PlayerPushCardList){
     playerCards.sort((a, b) => {    //  排序
         return a.value - b.value;
     });
@@ -133,15 +50,22 @@ that.selectRobot = function(palyer,data,socket,room,cb){
     /**
      *    1.查看是否王炸，如果有则把王炸拆分出来（优先级:0）
      */
-    kingBoom = getKingBoom(playerCards);
-    if(kingBoom){
+
+   let kBoom = getKingBoom(playerCards);
+   let kingBoom = [];
+    if(kBoom){
+        for(let i=0;i<kBoom;i++){
+            kingBoom.push(kBoom[i]);
+        }
+      
         // weigth = weigth + 3;
-        // // for(let i=0;i<playerCards.length;i++){
-        // //     for(let j=0;j<kingBoom.length;j++)
-        // //     if(playerCards[i].king === kingBoom[j].king){
-        // //         playerCards.splice(i,1);
-        // //     }
-        // // }
+        for(let i=0;i<playerCards.length;i++){
+            
+            if(playerCards[i].value === undefined){
+                playerCards.splice(i,1);
+                i--;
+            }
+        }
         console.log('有王炸');
     }
     
@@ -178,31 +102,31 @@ that.selectRobot = function(palyer,data,socket,room,cb){
 
    
      /**
-     *    3.查看是否能够组成飞机，如果有则把飞机拆分出来（优先级:2）
+     *    3.查看是否能够组成三张，如果有则把飞机拆分出来（优先级:2）
      */
     let threeCardsList = getRepeatCardsList(3,playerCards);
-    // if(plane.length>0){
+    if(threeCardsList.length>0){
     
         
-    //     let del;
-    //     for(let i=0;i<playerCards.length;){
-    //          del = false;
-    //         for(let j=0;j<plane.length;j++){
-    //             if(playerCards[i].value === plane[j][0].value){
-    //                     playerCards.splice(i,1);
-    //                     del = true;
-    //                     break ;
-    //             }
-    //         }
-    //         if(del){
-    //             i=0;
-    //         }else{
-    //             i++;
-    //         }
-    //     }
+        let del;
+        for(let i=0;i<playerCards.length;){
+             del = false;
+            for(let j=0;j<threeCardsList.length;j++){
+                if(playerCards[i].value === threeCardsList[j][0].value){
+                        playerCards.splice(i,1);
+                        del = true;
+                        break ;
+                }
+            }
+            if(del){
+                i=0;
+            }else{
+                i++;
+            }
+        }
         console.log('剩余 ==>' + playerCards.length+'张牌'); 
         console.log('有单张 ==>' + threeCardsList.length+'个'); 
-    // }
+    }
 
 
     let solaList = getRepeatCardsList(1,playerCards)
@@ -210,24 +134,24 @@ that.selectRobot = function(palyer,data,socket,room,cb){
     for(let i in solaList){
         newSola.push(solaList[i][0]);
     }
-    // if(sola.length > 0 ){
-    //     for(let i=0;i<playerCards.length;){
-    //         del = false;
-    //        for(let j=0;j<sola.length;j++){
-    //            if(playerCards[i].value === sola[j][0].value){
-    //                    playerCards.splice(i,1);
-    //                    del = true;
-    //                    break ;
-    //            }
-    //        }
-    //        if(del){
-    //            i=0;
-    //        }else{
-    //            i++;
-    //        }
-    //    }
+    if(solaList.length > 0 ){
+        for(let i=0;i<playerCards.length;){
+            del = false;
+           for(let j=0;j<solaList.length;j++){
+               if(playerCards[i].value === solaList[j][0].value){
+                       playerCards.splice(i,1);
+                       del = true;
+                       break ;
+               }
+           }
+           if(del){
+               i=0;
+           }else{
+               i++;
+           }
+       }
 
-    // }
+    }
 
     console.log('单张数据 = ' + JSON.stringify(solaList))
 
@@ -247,27 +171,27 @@ that.selectRobot = function(palyer,data,socket,room,cb){
             newDoubleList.push(doubleList[i][j]);
         }
     }
-    // if(pair.length>0){
+    if(doubleList.length>0){
 
-    //     let del;
-    //     for(let i=0;i<playerCards.length;){
-    //          del = false;
-    //         for(let j=0;j<pair.length;j++){
-    //             if(playerCards[i].value === pair[j][0].value){
-    //                     playerCards.splice(i,1);
-    //                     del = true;
-    //                     break ;
-    //             }
-    //         }
-    //         if(del){
-    //             i=0;
-    //         }else{
-    //             i++;
-    //         }
-    //     }
+        let del;
+        for(let i=0;i<playerCards.length;){
+             del = false;
+            for(let j=0;j<doubleList.length;j++){
+                if(playerCards[i].value === doubleList[j][0].value){
+                        playerCards.splice(i,1);
+                        del = true;
+                        break ;
+                }
+            }
+            if(del){
+                i=0;
+            }else{
+                i++;
+            }
+        }
         console.log('剩余 ==>' + playerCards.length+'张牌'); 
         console.log('有对子 ==>' + doubleList.length+'个'); 
-    // }
+    }
 
 
 
@@ -275,13 +199,48 @@ that.selectRobot = function(palyer,data,socket,room,cb){
      * 从单张中去除能够成为顺子的牌
      * 
      */
+    let scroll = getScrollCardsList(solaList);
 
-    let scroll = getScrollCardsList(6,newSola);
-    console.log('有顺子' +scroll.length);
+
+    if(scroll.length>0){
+        for(let i=0,len=scroll.length;i<len;i++){
+            newSola = newSola.filter(item => {
+                let idList= scroll[i].map(v => v.value)
+                return !idList.includes(item.value)
+            })
+        }
+        
+        console.log('位置 = >' + newSola)
+        solaList = [];
+        for(let i=0,len = newSola.length;i<len;i++){
+            let l=[];
+            l.push(newSola[i]);
+            solaList.push(l);
+        }
+        // let del;
+        // for(let i=0;i<solaList.length;){
+        //      del = false;
+        //     for(let j=0;j<scroll.length;j++){
+        //         if(solaList[i].value === scroll[j][0].value){
+        //                 solaList.splice(i,1);
+        //                 del = true;
+        //                 break ;
+        //         }
+        //     }
+        //     if(del){
+        //         i=0;
+        //     }else{
+        //         i++;
+        //     }
+        // }
+        console.log('剩余 ==>' + playerCards.length+'张牌'); 
+        console.log('有顺子' +scroll.length);
+    }
+
+
+
+
     
-    
-
-
     /**
      * 获取连对
      */
@@ -321,32 +280,51 @@ that.selectRobot = function(palyer,data,socket,room,cb){
      */
     let planeWithTow = getPlaneWithTow(plane,doubleList,PlayerPushCardList);
     
-    let canPushCardsList = getCanPushCardsList(kingBoom, fourBoom,threeCardsList,solaList,doubleList,
-        scroll,doubleScroll,threeWithOne,threeWithDouble,plane,planeWithOne,planeWithTow);
+
 
     let value ;
+ 
     if(cardsValue === undefined){
         value = 'no';
     }else{
         value = cardsValue.name;
     }
     //  返回牌组
+
     switch(value){
-        case 'One' : return solaList;   //  单张
-        case 'Double' : return doubleList;  //  对子
-        case 'Three' : return threeCardsList;   //   三张
-        case 'Boom' : return fourBoom;  //  4炸弹
-        case 'ThreeWithOne' : return threeWithOne;  //  3带1
-        case 'ThreeWithTwo' : return threeWithDouble;   //  3带对子
-        case 'Plane' : return plane;     //  飞机
-        case 'PlaneWithOne' : return planeWithOne;  //  飞机带单张
-        case 'PlaneWithTwo' : return planeWithTow;  //  飞机带对子
-        case 'Scroll' : return scroll;  //  单顺
-        case 'DoubleScroll' : return doubleScroll;  //  连对
-        case 'FourWithOne' : return fourBoom;   //  4带1
-        case 'FourWithTow' : return fourBoom;   //  4带对子
+        case 'One' : 
+             return solaList;   //  单张
+        case 'Double' :
+             return doubleList;  //  对子
+        case 'Three' : 
+             return threeCardsList;   //   三张
+        case 'Boom' :
+             return fourBoom;  //  4炸弹
+        case 'ThreeWithOne' :
+             return threeWithOne;  //  3带1
+        case 'ThreeWithTwo' :
+             return threeWithDouble;   //  3带对子
+        case 'Plane' :
+             return plane;     //  飞机
+        case 'PlaneWithOne' :
+             return planeWithOne;  //  飞机带单张
+        case 'PlaneWithTwo' :
+             return planeWithTow;  //  飞机带对子
+        case 'Scroll' : 
+             return scroll;  //  单顺
+        case 'DoubleScroll' :
+             return doubleScroll;  //  连对
+        case 'FourWithOne' :
+             return fourBoom;   //  4带1
+        case 'FourWithTow' :
+             return fourBoom;   //  4带对子
 
         default :
+            let canPushCardsList = getCanPushCardsList(kingBoom, fourBoom,threeCardsList,
+                                                        solaList,doubleList,scroll,doubleScroll,
+                                                        threeWithOne,threeWithDouble,plane,planeWithOne,
+                                                        planeWithTow);
+
         console.log('Robot 自动出牌数据 =》' + canPushCardsList)
         return canPushCardsList;
     }
@@ -361,6 +339,10 @@ that.selectRobot = function(palyer,data,socket,room,cb){
     // return sola;
 
 };
+
+ 
+
+
 
  const getKingBoom = function (cardList) {  //  获取王炸
         let list = [];
@@ -380,6 +362,8 @@ that.selectRobot = function(palyer,data,socket,room,cb){
 const getRepeatCardsList = function (num, cardsB) { 
     //获取重复次数为num 的牌的列表的组合
     let map = {};
+    
+    
     for (let i = 0; i < cardsB.length; i++) {
         let key = -1;
         if (cardsB[i].king === undefined){
@@ -411,52 +395,89 @@ const getRepeatCardsList = function (num, cardsB) {
 
 };
 
-const getScrollCardsList = function (length, cards) {
+const getScrollCardsList = function (solaCards) {
 
     let cardList = [];
     let map = {};
+    let cards =  JSON.parse(JSON.stringify(solaCards)); //  复制数组  
+    for(let i=0 ; i <cards.length ;i++){
+        if(cards[i][0].value === undefined || cards[i][0].value === 13){
+            cards.splice(i,1);
+            i--;
+        }
+    }
+ 
     for (let i = 0 ; i < cards.length ; i ++){
-        if (!map.hasOwnProperty(cards[i].value)){
-            cardList.push(cards[i]);
-            map[cards[i].value] = true;
+        if (!map.hasOwnProperty(cards[i][0].value)){
+            cardList.push(cards[i][0]);
+            map[cards[i][0].value] = true;
         }
     }
 
     cardList.sort((a, b)=>{
         return a.value - b.value;
     });
+
+    
+
     let cardsList = [];
-    for (let i = 0 ; i <(cardList.length - length); i ++){
-        let list = [];
-        for (let j = i ; j < i + length ; j ++){
-            list.push(cardList[j]);
-        }
-        cardsList.push(list);
+    let l=[];
+    let count = 0;
+    if(cards.length <5){
+        return cardsList;
     }
-    console.log('cars list =  ' + JSON.stringify(cardsList));
-    let endList = [];
-    for (let i = 0 ; i < cardsList.length ; i ++){
-        let flag = true;
-        for (let j = 0 ; j < (cardsList[i].length - 1) ; j ++){
-            if (Math.abs(cardsList[i][j].value - cardsList[i][j + 1].value) !== 1){
-                flag = false;
+    for(let i=0;i<cards.length -1;i++){
+        count++;
+        
+        if (Math.abs(cards[i][0].value - cards[i+1][0].value) !== 1){
+            
+            if(count >= 5){
+                for(let j=i- count + 1; j<= i; j++){
+                    l.push(cards[j][0]);
+                }
+                cardsList.push(l);
+                count = 0;
+                l=[];
             }
+            count = 0;
+            
         }
 
-        if (flag === true){
-            endList.push(cardsList[i]);
+        if(i+1 === cards.length - 1 && count >= 4){
+            for(let j=i- count + 1; j<= i + 1; j++){
+                l.push(cards[j][0]);
+            }
+            cardsList.push(l);
+            count = 0;
+            l=[];
         }
     }
-    return endList;
+
+
+
+
+    return cardsList;
 };
 
 
 
 
 
-const getDoubleScorllCardsList = function (cards) { //  获取双顺子
+const getDoubleScorllCardsList = function (Dcards) { //  获取双顺子
 
     let map = {};
+    let groupList = [];
+    let cards =  JSON.parse(JSON.stringify(Dcards)); //  复制数组  
+
+    if(cards.length === 0 ){
+        return  groupList;
+    }
+
+    for(let i in cards){
+        if(cards[i].value === undefined || cards[i].value === 13){
+            cards.splice(i,1);
+        }
+    }
 
     for(let i=0;i<cards.length;i++){
         let key = -1;
@@ -490,44 +511,83 @@ const getDoubleScorllCardsList = function (cards) { //  获取双顺子
     });
 
 
-    let groupList = [];
-    let keys = Object.keys(map);
-            keys.sort((a, b) => {
-                return Number(a) - Number(b);
-            });
-            let noConnect = -1; //  记录断开位置
-            for (let i = 0; i < (keys.length - 1); i++) {
-                let getList = [];
-                if (Math.abs(Number(keys[i]) - Number(keys[i + 1])) !== 1) {
-                   
-                    for(let j=i;j>-1;j--){
-                        for(let k=0;k<map[keys[i]].length;k++){ 
-                            getList.unshift(map[keys[j]][k]);
-                        }
-                    }
-                    noConnect = i;
-                    if(getList.length > 5 ){
-                        groupList.push(getList)
-                    }
-                    
-                }else{
-                    if(i === keys.length - 2){
-                        for(let j=i+1;j>noConnect;j--){
-                            for(let k=0;k<map[keys[j]].length;k++){
-                                getList.unshift(map[keys[j]][k]);
-                            }
-                            
-                        }
-                        if(getList.length > 5){
-                            groupList.push(getList);
-                        }
-                        
-                        
+    
+    let count = 0;
+    let l=[];
+    for(let i = 0, len = list.length - 1; i<len ; i++){
+        count++;
+        // console.log(Math.abs(Number(list[i][0].value) - Number(list[i+1][0].value)) !== 1   )
+        if ( Math.abs(Number(list[i][0].value) - Number(list[i+1][0].value)) !== 1   ){
+            
+    
+            if(count>=3){
+                for(let j=i-count + 1,len = i + 1 ;j < len ;j++){
+                    for(let k in list[j]){
+                        l.push(list[j][k])
                     }
                 }
+                groupList.push(l);
+                l=[];
+                count = 0;
             }
+            count = 0;
 
-    console.log('所有的对子' + groupList)
+        }
+
+        if(i+1 === list.length - 1 && count >= 2){
+            for(let j=i- count + 1; j<= i + 1; j++){
+                for(let k in list[j]){
+                    l.push(list[j][k])
+                }
+            }
+            groupList.push(l);
+            count = 0;
+            l=[];
+        }
+    }
+
+
+
+
+
+    // let groupList = [];
+    // let keys = Object.keys(map);
+    //         keys.sort((a, b) => {
+    //             return Number(a) - Number(b);
+    //         });
+    //         let noConnect = -1; //  记录断开位置
+    //         for (let i = 0; i < (keys.length - 1); i++) {
+    //             let getList = [];
+    //             if (Math.abs(Number(keys[i]) - Number(keys[i + 1])) !== 1) {
+                   
+    //                 for(let j=i;j>-1;j--){
+    //                     for(let k=0;k<map[keys[i]].length;k++){ 
+    //                         getList.unshift(map[keys[j]][k]);
+    //                     }
+    //                 }
+    //                 noConnect = i;
+    //                 if(getList.length > 5 ){
+    //                     groupList.push(getList)
+    //                 }
+                    
+    //             }else{
+    //                 if(i === keys.length - 2){
+    //                     for(let j=i+1;j>noConnect;j--){
+    //                         for(let k=0;k<map[keys[j]].length;k++){
+    //                             getList.unshift(map[keys[j]][k]);
+    //                         }
+                            
+    //                     }
+    //                     if(getList.length > 5){
+    //                         groupList.push(getList);
+    //                     }
+                        
+                        
+    //                 }
+    //             }
+            // }
+
+    console.log('所有的连对对子' + groupList)
     return groupList;
 };
 
@@ -540,7 +600,7 @@ const getThreeWithOne = function (three, one) {
     
     let oneCards = JSON.parse(JSON.stringify(one));//  复制数组  
     let list = [];
-    if(threeCards === undefined || oneCards === undefined){
+    if(threeCards.length === 0 || oneCards.length === 0){
         return list;
     }
 
@@ -563,7 +623,7 @@ const getThreeWithDouble = function (three, Double) {
     let threeCards =  JSON.parse(JSON.stringify(three)); //  复制数组  
     let DoubleCards =  JSON.parse(JSON.stringify(Double)); //  复制数组  
     let list = [];
-    if(threeCards === undefined || DoubleCards === undefined){
+    if(threeCards.length === 0 || DoubleCards.length === 0){
         return list;
     }
 
@@ -646,7 +706,7 @@ const getThreeWithDouble = function (three, Double) {
         for (let i = cont ; i < (keys.length); i ++){
             if (Math.abs(Number(keys[i]) - Number(keys[i + 1])) !== 1){
                
-                for (let j = cont ; j <=i + cont  ; j++){
+                for (let j = cont ; j <i + cont  ; j++){
                     for(let k in map[keys[j]]){
                         l.push(map[keys[j]][k]);
                     }
@@ -668,6 +728,7 @@ const getThreeWithDouble = function (three, Double) {
                         tempCardsList.push(l);
                         l = [];
                     }else{
+                        cont = i+1;
                         l = [];
                      
                     }
@@ -754,81 +815,82 @@ const getThreeWithDouble = function (three, Double) {
 const getCanPushCardsList = function(kingBoom, fourBoom,threeCardsList,solaList,doubleList,scroll,doubleScroll,
     threeWithOne,threeWithDouble,plane,planeWithOne,planeWithTow){
   
-    if( solaList.length !== 0){     //  单顺
-        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
-        return  solaList;
-    }
+  
     
-    if( doubleScroll.length !== 0){     //  双顺
-        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
-        return  doubleScroll;
-    }
-
-    if( planeWithOne.length !== 0){     //  飞机带单张
-        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
-        return  planeWithOne;
-    }
-
-    if(  planeWithTow.length !== 0){     //  飞机带对子
-        console.log('robot 自动飞机带对子出牌 =》' +JSON.stringify(solaList) )
-        return  planeWithTow;
-    }
-
-    if( plane.length !== 0){        //  飞机
-        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
-        return  plane;
-    }
-
-
-    if( threeWithOne.length !== 0){     //  三带单
-        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
-        return  threeWithOne;
-    }
-    if( threeWithDouble.length !== 0){      //  三带对子
-        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
-        return  threeWithDouble;
-    }
-
-    if( threeCardsList.length !== 0){   //  三张
-        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
-        return  threeCardsList;
-    }
-
-    if( doubleList.length !== 0){   //  对子
-        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
-        return  doubleList;
-    }
-
-    if( scroll.length !== 0){   //  单张
-        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
+    if( scroll.length !== 0){   //  单顺
+        console.log('robot 自动出顺子牌 =》' +JSON.stringify(scroll) )
         return  scroll;
     }
 
 
+    if( doubleScroll.length !== 0){     //  双顺
+        console.log('robot 自动出双顺牌 =》' +JSON.stringify(solaList) )
+        return  doubleScroll;
+    }
+
+    if( planeWithOne.length !== 0){     //  飞机带单张
+        console.log('robot 自动出飞机带单牌 =》' +JSON.stringify(solaList) )
+        return  planeWithOne;
+    }
+
+    if(  planeWithTow.length !== 0){     //  飞机带对子
+        console.log('robot 自动出飞机带对子出牌 =》' +JSON.stringify(solaList) )
+        return  planeWithTow;
+    }
+
+    if( plane.length !== 0){        //  飞机
+        console.log('robot 自动出飞机不带牌 =》' +JSON.stringify(plane) )
+        return  plane;
+    }
+
+    if( threeWithOne.length !== 0){     //  三带单
+        console.log('robot 自动出三带一牌 =》' +JSON.stringify(solaList) )
+        return  threeWithOne;
+    }
+    if( threeWithDouble.length !== 0){      //  三带对子
+        console.log('robot 自动出三带对子牌 =》' +JSON.stringify(solaList) )
+        return  threeWithDouble;
+    }
+
+    if( threeCardsList.length !== 0){   //  三张
+        console.log('robot 自动出三张不带牌 =》' +JSON.stringify(solaList) )
+        return  threeCardsList;
+    }
+
+    if( doubleList.length !== 0){   //  对子
+        console.log('robot 自动出对子牌 =》' +JSON.stringify(solaList) )
+        return  doubleList;
+    }
+
+    if( solaList.length !== 0){     //  单张
+        console.log('robot 自动出单张牌 =》' +JSON.stringify(solaList) )
+        return  solaList;
+    }
+
     if( fourBoom.length !== 0){ //  炸弹
-        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
+        console.log('robot 自动出普通炸弹牌 =》' +JSON.stringify(solaList) )
         return  fourBoom;
     }
 
     if( kingBoom.length !== 0){ //  火箭
-        console.log('robot 自动出牌 =》' +JSON.stringify(solaList) )
+        console.log('robot 自动出王炸牌 =》' +JSON.stringify(solaList) )
         return  kingBoom;
     }
 };
 
 // };
-const getCardsValue = function (cardList) {
-    // return true;
-    if (cardList.name === 'One') {
-        console.log('单张牌');
-        console.log('返回单张 = ' + JSON.stringify(that.sola));
-        return that.sola;
-    }
-    return 'false';
+// const getCardsValue = function (cardList) {
+//     // return true;
+//     if (cardList.name === 'One') {
+//         console.log('单张牌');
+//         console.log('返回单张 = ' + JSON.stringify(that.sola));
+//         return that.sola;
+//     }
+//     return 'false';
     
-};
-that.spliceCards = splitPlayerCards;
-that.getRorbotCards = getCardsValue;
+// };
+that.spliceCards = splitPlayerCards;    //  机器人牌型拆分
+// that.getRorbotCards = getCardsValue;
 
 return that;
 

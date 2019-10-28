@@ -84,6 +84,9 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         if (_room){
             if(_room.getRoomState() <2){
                 _room.playerOffLine(that);
+                if(_room.getPlayerList().length === 0){
+                    gameContorller.reMove(_room);
+                }
             }else{
                 console.log('游戏正在进行,玩家离线，实行玩家托管');
                 _room.lostConnection(that);
@@ -138,6 +141,21 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                     if (err){
                         notify('join_room', {err: err}, callBackIndex);
                     }else{
+                        _room = data.room;
+                        notify('join_room', {data: data.data}, callBackIndex);
+                    }
+                });
+                break;
+            case 'quick_to_join':   //  快速加入房间
+                console.log('join room data = ' + JSON.stringify(notifyData.data));
+                gameContorller.quickToJoin(that,(err, data)=>{
+                    if (err){
+                        notify('join_room', {err: err}, callBackIndex);
+                    }else{
+                        if(data.msg !=undefined){
+                            notify('join_room',{data: data} , callBackIndex);
+                            return;
+                        }
                         _room = data.room;
                         notify('join_room', {data: data.data}, callBackIndex);
                     }

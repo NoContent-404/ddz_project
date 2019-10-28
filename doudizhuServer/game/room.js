@@ -52,8 +52,8 @@ const getSeatIndex = function (playerList) {
 };
 module.exports = function (spec, player) {
     let that = {};
-    // that.roomID = getRandomStr(6);
-    that.roomID = '123456';
+    that.roomID = getRandomStr(6);
+    // that.roomID = '123456';
     that.buttonCards = undefined;
     let config = defines.createRoomConfig[spec.rate];
     let _bottom = config.bottom;    //  房间底数
@@ -504,8 +504,9 @@ module.exports = function (spec, player) {
                 console.log('玩家没有抢地主');
                 //  告诉客户端每个玩家都要销毁节点，让客户端重新发送发牌请求
                 for(let i = 0;i<_playerList.length; i++){
-                    _playerList[i].sendNoMaster(_playerList[i].accountID);
+                    _playerList[i].sendNoMaster(_playerList);
                 }
+                _state = -1;
                 // setState(RoomState.PushCard);   //  重新发牌
             }else{
                 changeMaster();
@@ -550,12 +551,10 @@ module.exports = function (spec, player) {
     that.playerOffLine = function (player) {    //  删除掉线玩家
         for (let i = 0; i < _playerList.length; i++) {
             if (_playerList[i].accountID === player.accountID) {
-                _playerList.splice(i, 1);
-
 
                 that.playerLeave(player);
-
-                if (player.accountID === _houseManager.accountID) {
+                
+                if (player.accountID === _houseManager.accountID && _playerList.length !== 0) {
                     changeHouseManager();
                 }
             }
@@ -865,13 +864,18 @@ module.exports = function (spec, player) {
                         if(_currentPlayerPushCardList !== undefined){
                              cardsValue = _carder.isCanPushCards(_currentPlayerPushCardList); //  返回我出的牌的类型    三张：Three
                         }
-                        
+                       
                         robot = player._robot.spliceCards(player.cards,cardsValue,_currentPlayerPushCardList);
+                        if(cardsList.length === 1 && cardsList[0].length === 2){
+                            if( cardsList[0][0].value === undefined && cardsList[0][1].value === undefined){
+                                robot = cardsList;
+                            }
+                        }
                         cardsList = [];
-                        if(cardsValue === undefined){
-                            console.log(typeof robot[0]);
-                            console.log(cardsValue);
-                       }
+                    //     if(cardsValue === undefined){
+                    //         console.log(typeof robot[0]);
+                    //         console.log(cardsValue);
+                    //    }
 
                         if(_currentPlayerPushCardList !== undefined){
                           
@@ -900,7 +904,7 @@ module.exports = function (spec, player) {
                     }
 
 
-                            
+                            console.log('玩家== >' + player.nickName );
                             console.log('数据 == >' + JSON.stringify(cardsList[0]) );
 
 

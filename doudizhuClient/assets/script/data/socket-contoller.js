@@ -93,6 +93,12 @@ const SocketController  = function () {
     that.requestJoinRoom = function (data, cb) {    //  加入房间
         request('join_room', data, cb);
     };
+
+    that.requestQuickJoinRoom = function ( cb) {    //  加入房间
+        request('quick_to_join', {}, cb);
+    };
+
+
     that.requestEnterRoomScene = function (cb) {
         request('enter_room_scene', {},cb);
     };

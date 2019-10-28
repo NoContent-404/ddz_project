@@ -73,97 +73,95 @@ module.exports = function () {
         }
 
         //  测试牌组
-        let cardList = [
-            Card(CardValue['3'], CardShape.C),
-            Card(CardValue['3'], CardShape.C),
-            Card(CardValue['3'], CardShape.C),
-            Card(CardValue['4'], CardShape.C),
-            Card(CardValue['4'], CardShape.C),
-            Card(CardValue['4'], CardShape.C),
-            Card(CardValue['5'], CardShape.C),
-            Card(CardValue['5'], CardShape.C),
-            Card(CardValue['5'], CardShape.C),
-            Card(CardValue['7'], CardShape.C),
-            Card(CardValue['7'], CardShape.C),
-            Card(CardValue['9'], CardShape.C),
-            Card(CardValue['9'], CardShape.C),
-            Card(CardValue['10'], CardShape.C),
-            Card(CardValue['10'], CardShape.C),
-            Card(CardValue['J'], CardShape.C),
-            // Card(CardValue['J'], CardShape.C),
-            Card(undefined, undefined, Kings.k),
-            // Card(undefined, undefined, Kings.K),
+        // let cardList = [
+        //     Card(CardValue['3'], CardShape.C),
+        //     Card(CardValue['3'], CardShape.C),
+        //     Card(CardValue['3'], CardShape.C),
+        //     Card(CardValue['4'], CardShape.C),
+        //     Card(CardValue['4'], CardShape.C),
+        //     Card(CardValue['4'], CardShape.C),
+        //     Card(CardValue['5'], CardShape.C),
+        //     Card(CardValue['5'], CardShape.C),
+        //     Card(CardValue['5'], CardShape.C),
+        //     Card(CardValue['7'], CardShape.C),
+        //     Card(CardValue['7'], CardShape.C),
+        //     Card(CardValue['9'], CardShape.C),
+        //     Card(CardValue['9'], CardShape.C),
+        //     Card(CardValue['10'], CardShape.C),
+        //     Card(CardValue['10'], CardShape.C),
+        //     Card(CardValue['J'], CardShape.C),
+        //     // Card(CardValue['J'], CardShape.C),
+        //     Card(undefined, undefined, Kings.k),
+        //     // Card(undefined, undefined, Kings.K),
 
-        ];
-
-
-
-        let cardListA = [
-            Card(CardValue['3'], CardShape.C),
-            Card(CardValue['4'], CardShape.C),
-            Card(CardValue['5'], CardShape.C),
-            Card(CardValue['6'], CardShape.C),
-            Card(CardValue['7'], CardShape.C),
-            Card(CardValue['8'], CardShape.C),
-            Card(CardValue['9'], CardShape.C),
-            Card(CardValue['10'], CardShape.C),
-            Card(CardValue['J'], CardShape.C),
-            Card(CardValue['Q'], CardShape.C),
-            Card(CardValue['K'], CardShape.C),
-            Card(CardValue['3'], CardShape.C),
-            Card(CardValue['3'], CardShape.C),
-            Card(CardValue['4'], CardShape.C),
-            Card(CardValue['4'], CardShape.C),
-            Card(CardValue['5'], CardShape.C),
-            Card(CardValue['5'], CardShape.C),
-            // Card(CardValue['J'], CardShape.C),
-            // Card(undefined, undefined, Kings.k),
-            // Card(undefined, undefined, Kings.K),
-
-        ];
-
-        let cardListB = [
-            Card(CardValue['3'], CardShape.C),
-            Card(CardValue['3'], CardShape.C),
-            Card(CardValue['3'], CardShape.C),
-            Card(CardValue['4'], CardShape.C),
-            Card(CardValue['4'], CardShape.C),
-            Card(CardValue['5'], CardShape.C),
-            Card(CardValue['5'], CardShape.C),
-            Card(CardValue['7'], CardShape.C),
-            Card(CardValue['7'], CardShape.C),
-            Card(CardValue['9'], CardShape.C),
-            Card(CardValue['9'], CardShape.C),
-            Card(CardValue['9'], CardShape.C),
-            Card(CardValue['10'], CardShape.C),
-            Card(CardValue['10'], CardShape.C),
-            Card(CardValue['J'], CardShape.C),
-            Card(CardValue['J'], CardShape.C),
-            Card(CardValue['J'], CardShape.C),
-            // Card(CardValue['J'], CardShape.C),
-            // Card(undefined, undefined, Kings.k),
-            // Card(undefined, undefined, Kings.K),
-
-        ];
-
-        for (let i = 0; i < threeCardsMap[0].length; i++) {
-            let id = threeCardsMap[0][i].id;
-            cardList[i].id = id;
-            threeCardsMap[0][i] = cardList[i]
-        }
-        for (let i = 0; i < threeCardsMap[1].length; i++) {
-            let id = threeCardsMap[1][i].id;
-            cardListA[i].id = id;
-            threeCardsMap[1][i] = cardListA[i]
-        }
-        for (let i = 0; i < threeCardsMap[2].length; i++) {
-            let id = threeCardsMap[1][i].id;
-            cardListB[i].id = id;
-            threeCardsMap[2][i] = cardListB[i]
-        }
+        // ];
 
 
-        
+
+        // let cardListA = [
+        //     Card(CardValue['3'], CardShape.C),
+        //     Card(CardValue['4'], CardShape.C),
+        //     Card(CardValue['5'], CardShape.C),
+        //     Card(CardValue['6'], CardShape.C),
+        //     Card(CardValue['7'], CardShape.C),
+        //     Card(CardValue['8'], CardShape.C),
+        //     Card(CardValue['9'], CardShape.C),
+        //     Card(CardValue['9'], CardShape.C),
+        //     Card(CardValue['10'], CardShape.C),
+        //     Card(CardValue['J'], CardShape.C),
+        //     Card(CardValue['Q'], CardShape.C),
+        //     Card(CardValue['K'], CardShape.C),
+        //     Card(CardValue['A'], CardShape.C),
+        //     Card(CardValue['9'], CardShape.C),
+        //     Card(CardValue['2'], CardShape.C),
+        //     // Card(CardValue['9'], CardShape.C),
+        //     // Card(CardValue['9'], CardShape.C),
+        //     Card(CardValue['J'], CardShape.C),
+        //     Card(undefined, undefined, Kings.k),
+        //     // Card(undefined, undefined, Kings.K),
+
+        // ];
+
+        // let cardListB = [
+        //     Card(CardValue['K'], CardShape.C),
+        //     Card(CardValue['K'], CardShape.C),
+        //     Card(CardValue['K'], CardShape.C),
+        //     Card(CardValue['4'], CardShape.C),
+        //     Card(CardValue['4'], CardShape.C),
+        //     Card(CardValue['5'], CardShape.C),
+        //     Card(CardValue['5'], CardShape.C),
+        //     Card(CardValue['6'], CardShape.C),
+        //     Card(CardValue['6'], CardShape.C),
+        //     Card(CardValue['8'], CardShape.C),
+        //     Card(CardValue['9'], CardShape.C),
+        //     Card(CardValue['9'], CardShape.C),
+        //     Card(CardValue['10'], CardShape.C),
+        //     Card(CardValue['10'], CardShape.C),
+        //     Card(CardValue['J'], CardShape.C),
+        //     Card(CardValue['J'], CardShape.C),
+        //     // Card(CardValue['Q'], CardShape.C),
+        //     // Card(CardValue['J'], CardShape.C),
+        //     // Card(undefined, undefined, Kings.k),
+        //     Card(undefined, undefined, Kings.K),
+
+        // ];
+
+        // for (let i = 0; i < threeCardsMap[0].length; i++) {
+        //     let id = threeCardsMap[0][i].id;
+        //     cardList[i].id = id;
+        //     threeCardsMap[0][i] = cardList[i]
+        // }
+        // for (let i = 0; i < threeCardsMap[1].length; i++) {
+        //     let id = threeCardsMap[1][i].id;
+        //     cardListA[i].id = id;
+        //     threeCardsMap[1][i] = cardListA[i]
+        // }
+        // for (let i = 0; i < threeCardsMap[2].length; i++) {
+        //     let id = threeCardsMap[1][i].id;
+        //     cardListB[i].id = id;
+        //     threeCardsMap[2][i] = cardListB[i]
+        // }
+
         return [threeCardsMap[0], threeCardsMap[1], threeCardsMap[2], _cardList];
     };
 
