@@ -52,8 +52,8 @@ const getSeatIndex = function (playerList) {
 };
 module.exports = function (spec, player) {
     let that = {};
-    that.roomID = getRandomStr(6);
-    // that.roomID = '123456';
+    // that.roomID = getRandomStr(6);
+    that.roomID = '123456';
     that.buttonCards = undefined;
     let config = defines.createRoomConfig[spec.rate];
     let _bottom = config.bottom;    //  房间底数

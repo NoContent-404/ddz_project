@@ -73,94 +73,93 @@ module.exports = function () {
         }
 
         //  测试牌组
-        // let cardList = [
-        //     Card(CardValue['3'], CardShape.C),
-        //     Card(CardValue['3'], CardShape.C),
-        //     Card(CardValue['3'], CardShape.C),
-        //     Card(CardValue['4'], CardShape.C),
-        //     Card(CardValue['4'], CardShape.C),
-        //     Card(CardValue['4'], CardShape.C),
-        //     Card(CardValue['5'], CardShape.C),
-        //     Card(CardValue['5'], CardShape.C),
-        //     Card(CardValue['5'], CardShape.C),
-        //     Card(CardValue['7'], CardShape.C),
-        //     Card(CardValue['7'], CardShape.C),
-        //     Card(CardValue['9'], CardShape.C),
-        //     Card(CardValue['9'], CardShape.C),
-        //     Card(CardValue['10'], CardShape.C),
-        //     Card(CardValue['10'], CardShape.C),
-        //     Card(CardValue['J'], CardShape.C),
-        //     // Card(CardValue['J'], CardShape.C),
-        //     Card(undefined, undefined, Kings.k),
-        //     // Card(undefined, undefined, Kings.K),
+        let cardList = [
+            Card(CardValue['3'], CardShape.C),
+            Card(CardValue['3'], CardShape.C),
+            Card(CardValue['3'], CardShape.C),
+            Card(CardValue['4'], CardShape.C),
+            Card(CardValue['4'], CardShape.C),
+            Card(CardValue['4'], CardShape.C),
+            Card(CardValue['4'], CardShape.C),
+            Card(CardValue['5'], CardShape.C),
+            Card(CardValue['6'], CardShape.C),
+            Card(CardValue['7'], CardShape.C),
+            Card(CardValue['7'], CardShape.C),
+            Card(CardValue['9'], CardShape.C),
+            Card(CardValue['9'], CardShape.C),
+            Card(CardValue['10'], CardShape.C),
+            Card(CardValue['10'], CardShape.C),
+            Card(CardValue['J'], CardShape.C),
+            // Card(CardValue['J'], CardShape.C),
+            Card(undefined, undefined, Kings.k),
+            // Card(undefined, undefined, Kings.K),
 
-        // ];
+        ];
 
 
 
-        // let cardListA = [
-        //     Card(CardValue['3'], CardShape.C),
-        //     Card(CardValue['4'], CardShape.C),
-        //     Card(CardValue['5'], CardShape.C),
-        //     Card(CardValue['6'], CardShape.C),
-        //     Card(CardValue['7'], CardShape.C),
-        //     Card(CardValue['8'], CardShape.C),
-        //     Card(CardValue['9'], CardShape.C),
-        //     Card(CardValue['9'], CardShape.C),
-        //     Card(CardValue['10'], CardShape.C),
-        //     Card(CardValue['J'], CardShape.C),
-        //     Card(CardValue['Q'], CardShape.C),
-        //     Card(CardValue['K'], CardShape.C),
-        //     Card(CardValue['A'], CardShape.C),
-        //     Card(CardValue['9'], CardShape.C),
-        //     Card(CardValue['2'], CardShape.C),
-        //     // Card(CardValue['9'], CardShape.C),
-        //     // Card(CardValue['9'], CardShape.C),
-        //     Card(CardValue['J'], CardShape.C),
-        //     Card(undefined, undefined, Kings.k),
-        //     // Card(undefined, undefined, Kings.K),
+        let cardListA = [
+            Card(CardValue['3'], CardShape.C),
+            Card(CardValue['3'], CardShape.C),
+            Card(CardValue['3'], CardShape.C),
+            Card(CardValue['4'], CardShape.C),
+            Card(CardValue['4'], CardShape.C),
+            Card(CardValue['4'], CardShape.C),
+            Card(CardValue['4'], CardShape.C),
+            Card(CardValue['5'], CardShape.C),
+            Card(CardValue['6'], CardShape.C),
+            Card(CardValue['7'], CardShape.C),
+            Card(CardValue['7'], CardShape.C),
+            Card(CardValue['9'], CardShape.C),
+            Card(CardValue['9'], CardShape.C),
+            Card(CardValue['10'], CardShape.C),
+            Card(CardValue['10'], CardShape.C),
+            Card(CardValue['J'], CardShape.C),
+            // Card(CardValue['J'], CardShape.C),
+            Card(undefined, undefined, Kings.k),
+            // Card(undefined, undefined, Kings.K),
 
-        // ];
+        ];
 
-        // let cardListB = [
-        //     Card(CardValue['K'], CardShape.C),
-        //     Card(CardValue['K'], CardShape.C),
-        //     Card(CardValue['K'], CardShape.C),
-        //     Card(CardValue['4'], CardShape.C),
-        //     Card(CardValue['4'], CardShape.C),
-        //     Card(CardValue['5'], CardShape.C),
-        //     Card(CardValue['5'], CardShape.C),
-        //     Card(CardValue['6'], CardShape.C),
-        //     Card(CardValue['6'], CardShape.C),
-        //     Card(CardValue['8'], CardShape.C),
-        //     Card(CardValue['9'], CardShape.C),
-        //     Card(CardValue['9'], CardShape.C),
-        //     Card(CardValue['10'], CardShape.C),
-        //     Card(CardValue['10'], CardShape.C),
-        //     Card(CardValue['J'], CardShape.C),
-        //     Card(CardValue['J'], CardShape.C),
-        //     // Card(CardValue['Q'], CardShape.C),
-        //     // Card(CardValue['J'], CardShape.C),
-        //     // Card(undefined, undefined, Kings.k),
-        //     Card(undefined, undefined, Kings.K),
+        let cardListB = [
+            Card(CardValue['K'], CardShape.C),
+            Card(CardValue['K'], CardShape.C),
+            Card(CardValue['K'], CardShape.C),
+            Card(CardValue['4'], CardShape.C),
+            Card(CardValue['4'], CardShape.C),
+            Card(CardValue['5'], CardShape.C),
+            Card(CardValue['5'], CardShape.C),
+            Card(CardValue['6'], CardShape.C),
+            Card(CardValue['6'], CardShape.C),
+            Card(CardValue['8'], CardShape.C),
+            Card(CardValue['9'], CardShape.C),
+            Card(CardValue['9'], CardShape.C),
+            Card(CardValue['10'], CardShape.C),
+            Card(CardValue['10'], CardShape.C),
+            Card(CardValue['J'], CardShape.C),
+            Card(CardValue['J'], CardShape.C),
+            // Card(CardValue['Q'], CardShape.C),
+            // Card(CardValue['J'], CardShape.C),
+            // Card(undefined, undefined, Kings.k),
+            Card(undefined, undefined, Kings.K),
 
-        // ];
+        ];
 
-        // for (let i = 0; i < threeCardsMap[0].length; i++) {
-        //     let id = threeCardsMap[0][i].id;
-        //     cardList[i].id = id;
-        //     threeCardsMap[0][i] = cardList[i]
-        // }
-        // for (let i = 0; i < threeCardsMap[1].length; i++) {
-        //     let id = threeCardsMap[1][i].id;
-        //     cardListA[i].id = id;
-        //     threeCardsMap[1][i] = cardListA[i]
-        // }
-        // for (let i = 0; i < threeCardsMap[2].length; i++) {
-        //     let id = threeCardsMap[1][i].id;
-        //     cardListB[i].id = id;
-        //     threeCardsMap[2][i] = cardListB[i]
-        // }
+        for (let i = 0; i < threeCardsMap[0].length; i++) {
+            let id = threeCardsMap[0][i].id;
+            cardList[i].id = id;
+            threeCardsMap[0][i] = cardList[i]
+        }
+        for (let i = 0; i < threeCardsMap[1].length; i++) {
+            let id = threeCardsMap[1][i].id;
+            cardListA[i].id = id;
+            threeCardsMap[1][i] = cardListA[i]
+        }
+        for (let i = 0; i < threeCardsMap[2].length; i++) {
+            let id = threeCardsMap[1][i].id;
+            cardListB[i].id = id;
+            threeCardsMap[2][i] = cardListB[i]
+        }
 
         return [threeCardsMap[0], threeCardsMap[1], threeCardsMap[2], _cardList];
     };
@@ -389,7 +388,8 @@ module.exports = function () {
             }
 
             let oneCount = 0;   //  记录单张个数
-            let towCount = 0;
+            // let towCount = 0;
+            let threeCount = 0;
             let threeList = []; //  记录3张
             for (let i in map) {
                 if (map[i] >= 3) {
@@ -399,19 +399,26 @@ module.exports = function () {
                 if (map[i] === 1) {
                     oneCount++;
                 }
-                if (map[i] > 3) {
+                if (map[i] === 3) {
+                    threeCount ++;
+                }
+                if(map[i] === 4){
                     oneCount++;
-                    // threeCount ++;
+                    threeCount ++;
                 }
                 if (map[i] === 2) {
-                    towCount++;
+                    oneCount = oneCount + 2;
                 }
             }
             console.log('one count = ' + oneCount);
             console.log('three list = ' + JSON.stringify(threeList));
-            if (threeList.length < 2 || (oneCount <2 && towCount !== 1)  || towCount === 2  ) {
+            if (threeCount < 2 || oneCount <2 ) {
                 return false;
             }
+            if(threeCount !== oneCount){
+                return false;
+            }
+            
             if (Math.abs(Number(threeList[0]) - Number(threeList[1])) === 1) {
                 return true;
             }
@@ -524,7 +531,7 @@ module.exports = function () {
 
 
     const isFourWithOne = function (cardList) {    //  是否4带单张
-        if (cardList.length > 5) {
+        if (cardList.length === 6) {
             let map = {};
             for (let i = 0; i < cardList.length; i++) {
                 if (map.hasOwnProperty(cardList[i].value)) {
@@ -575,7 +582,7 @@ module.exports = function () {
 
 
     const isFourWithTow = function (cardList) {    //  是否4带2对子
-        if (cardList.length >= 5) {
+        if (cardList.length === 8) {
             let map = {};
             for (let i = 0; i < cardList.length; i++) {
                 if (map.hasOwnProperty(cardList[i].value)) {
@@ -1203,7 +1210,13 @@ module.exports = function () {
         return list;
     };
     that.tipsOne = function (cardsA, cardsB) {  //  提示单张
-        let map = getCardListWithStart(cardsA[0].value, cardsB);
+        let map;
+        if(cardsA[0].value === undefined){
+             map = getCardListWithStart(cardsA[0].king, cardsB);
+        }else{
+             map = getCardListWithStart(cardsA[0].value, cardsB);
+        }
+        
         let list = [];
         for (let i in map) {
             list.push(map[i]);
@@ -1476,6 +1489,19 @@ module.exports = function () {
     const getPlaneWithStart = function (num, cardsB,cardsA) {
         let list = getRepeatCardsList(3,cardsB);
         let listA = getRepeatCardsList(3,cardsA);
+        let list4 = getRepeatCardsList(4,cardsA);
+
+        if(list4 !== undefined){
+            let l=[];
+            for(let i=0;i<list4.length;i++){
+                l.push(list4[i][0])
+                l.push(list4[i][1])
+                l.push(list4[i][2])
+            }
+            listA.push(l);
+            l=[];
+        }
+
         let lengthA = 0;
         for(let i in listA){
             lengthA = lengthA + listA[i].length;
@@ -1555,6 +1581,17 @@ module.exports = function () {
         console.log('value a = ' + valueA);
 
         let listA = getRepeatCardsList(3,cardsA);
+        let list4 = getRepeatCardsList(4,cardsA);
+        if(list4 !== undefined){
+            let l=[];
+            for(let i=0;i<list4.length;i++){
+                l.push(list4[i][0])
+                l.push(list4[i][1])
+                l.push(list4[i][2])
+            }
+            listA.push(l);
+        }
+        
         let lenA = listA.length;
 
         let cardsList = getPlaneWithStart(valueA, cardsB,cardsA);
