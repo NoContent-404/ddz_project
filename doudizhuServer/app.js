@@ -19,8 +19,6 @@ const client = redis.createClient(6379,'192.168.1.99');
 
 
 
-
-
 app.use(cookieParser());    
 app.use('/login', function (req,res) {
     var arg = url.parse(req.url, true).query; 
@@ -37,17 +35,13 @@ app.use('/login', function (req,res) {
         let str = body.data.openId.replace(/[\r\n]/g,"")
         str = str.replace(/\ +/g,"");
 
-        
          myDB.getPlayerInfoWithopenID(str, (err, data) => {
             if (err) {
                 console.log('err =  ' + err);
             } else {
                 console.log('data =  ' + JSON.stringify(data));
                 if (data.length === 0) {    //  如果不纯在这个登录的人
-
                     //  生成随机数
-
-
                     let loginData = body.data;
                     let ac = chinaTime('YYYYMMDDhhmmss');
                     myDB.createPlayerInfo(  //  创建这个人
@@ -58,7 +52,6 @@ app.use('/login', function (req,res) {
                         loginData.image,
                         str,
                         loginData.sex,
- 
                     );
                     // res.setHeader('Set-Cookie','username=1111;path=/;httponly')
                     res.cookie('user',ac,{maxAge: 60 * 1000 * 300});
@@ -71,6 +64,8 @@ app.use('/login', function (req,res) {
                 } 
             }
         });
+
+        
 
 
        
@@ -96,15 +91,11 @@ app.use('/login', function (req,res) {
 //  cookie 判断
 
 app.use('/cookie', function (req,res) {
-    // res.clearCookie('user'); 
-    
-    // res.setHeader('Set-Cookie','username=1111;path=/;httponly')
-    //  console.log(unique_id);
+ 
     var unique_id = req.cookies.user;
     
 
     if(unique_id == undefined){
-        // res.redirect(302, 'http://192.168.1.251:8092/pages/websiteAuthorh/index.html?appId=sk1bff720bb1364622&callbackUrl=http://192.168.1.4:3000/login');
         res.redirect(302, 'http://192.168.1.4:7456/?unique_id=no');
         console.log("cookie no exist ：告诉他需要验证登录")
     }else{
@@ -126,9 +117,7 @@ myDB.connect({
     "password": "123456",
     "database": "hhq"
 });
-// myDB.getPlayerInfoWithUniqueID('20190919102018', (err, data) => {
-//     console.log('data = ' + JSON.stringify(data));
-// });
+
 var dd= 0;
 
 
@@ -141,6 +130,12 @@ io.on('connection', function (socket) {
     
     socket.on('notify', (notifyData) => {   //  登录传递过来的数据
         console.log('notify ' + JSON.stringify(notifyData));
+
+
+        //  监听全局错误
+        process.on('uncaughtException', function (err) {
+            console.log('Caught exception: ' + err);
+            });
         
         //  登录
         switch (notifyData.type) {
@@ -171,21 +166,21 @@ io.on('connection', function (socket) {
                                 if (err) {
                                     console.log('err =  ' + err);
                                 } else {
-                                    
                                     client.rpush('user:' +uniqueID+':data', JSON.stringify(data[0]));
                                     //  存在这个人，创建玩家
                                     if(data.length ===0){
                                         console.log('没有这个人')
                                     }
                                     console.log('data = ' + JSON.stringify(data));
-                                    gameController.createPlayer(data[0], socket, callBackIndex);
+                          
+                                        gameController.createPlayer(data[0], socket, callBackIndex);
+                              
+                                    
                                 
                                 }
                             });
                         }
                        
-                        
-                        
                     }
                  });
 

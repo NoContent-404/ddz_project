@@ -506,7 +506,7 @@ module.exports = function (spec, player) {
                 for(let i = 0;i<_playerList.length; i++){
                     _playerList[i].sendNoMaster(_playerList);
                 }
-                _state = -1;
+                _state = 2;
                 // setState(RoomState.PushCard);   //  重新发牌
             }else{
                 changeMaster();
@@ -829,10 +829,11 @@ module.exports = function (spec, player) {
        if(player.isOnLine === false || player.isTrusteeship === true){
             if(_state > 1 && _state < 4){
                 if(_canRobPlayer.accountID === player.accountID){   //  掉线玩家让他不抢地主
-                    for(let i=0;i<_playerList.length;i++){
-                        _playerList[i].sendPlayerRobStateMater(player.accountID,'no-ok');
-                    }
-                    turnPlayerRobMater();   //  轮到下一个玩家抢
+                    // for(let i=0;i<_playerList.length;i++){
+                    //     _playerList[i].sendPlayerRobStateMater(player.accountID,'no-ok');
+                    // }
+                    // turnPlayerRobMater();   //  轮到下一个玩家抢
+                    that.playerRobStateMaster(player,'no-ok')
                 }
                 console.log('进入抢地主状态');
                 return;

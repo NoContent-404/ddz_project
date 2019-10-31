@@ -82,7 +82,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         let  List1 =   gameContorller.getPlayerList();            
         console.log('在线玩家列表 = ' +JSON.stringify(List1));
         if (_room){
-            if(_room.getRoomState() <2){
+            if(_room.getRoomState() <=1){
                 _room.playerOffLine(that);
                 if(_room.getPlayerList().length === 0){
                     gameContorller.reMove(_room);
@@ -288,6 +288,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
             case 'player_trusteeship':    //  托管
 
             if (_room){
+
                 if(that.isTrusteeship === false){
                     console.log('游戏正在进行,玩家实行托管');
                     that.isTrusteeship = true;  //  进行托管

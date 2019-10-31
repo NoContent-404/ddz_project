@@ -62,7 +62,9 @@ exports.selectPlayer = function(data,player,cb){  //  搜索玩家
 }
 
 exports.createPlayer = function (data, socket, callBackIndex) {
-    let player = Player(data, socket, callBackIndex, this,robot);
+    let player
+  
+    player = Player(data, socket, callBackIndex, this,robot);
     _playerList.push(player);
 };
 
