@@ -59,19 +59,15 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         }else{
             roomName = undefined;
         }
-        // console.log('我的ID = ' +myId)   //  可用
-        // timerStart(10000,_socket,myId,{
+        console.log('我的ID = ' +myId)   //  可用
+        // timerStart(1000,_socket,myId,{
         //     player : that,
         //     myRoom :roomName
         // });
     })
 
 
-    // _socket.on('select_game',(data)=>{
-    //     console.log('收到玩家查询游戏');
-    //   let conPlayer =  gameContorller.selectPlayer(data,socket); //  查找玩家是否在房间中游戏
-    //    console.log('玩家上线 = ' + JSON.stringify(conPlayer));
-    // });
+ 
 
     
     _socket.on('disconnect', ()=>{
@@ -95,17 +91,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         }
     });
     
-    // function  timerStart(millisecond,data) {
-    //     var timerToken = setInterval(function () {
-    //             console.log("服务端状态：" +JSON.stringify(data))
-    //         },
-    //         millisecond
-    //     );
-    // } 
     
-    
-
-
 
     _socket.on('notify', (notifyData)=>{
 
@@ -344,6 +330,11 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                         notify('select_game', {err: err}, callBackIndex);
                         // console.log(err)
                     }else{
+                        // timerStart(1000,_socket,myId,{
+                        //     player : that,
+                        //     myRoom :roomName
+                        // });
+                        console.log(JSON.stringify(data))
                         notify('select_game', {data: data}, callBackIndex);
                     }
 
@@ -534,26 +525,13 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                         allPlayer.push(data);
                        
                         socket.emit('start',data);
-                        
-                        // console.log(JSON.stringify(allPlayer[0].player.accountID))
-                        // console.log(JSON.stringify(allPlayer[0].myRoom))
-          
                         console.log(JSON.stringify(data)  + '刚刚出生')
                     }else{
-                        console.log('我的账号 = '+JSON.stringify(myId) )
+
                         for(let i=0;i<allPlayer.length;i++){
                             console.log(allPlayer[i].player.accountID);
                             console.log(myId);
                             if(allPlayer[i].player.accountID === myId){
-                                
-
-                            //  let  roomList =   gameContorller.getroomList();
-                             let  List =   gameContorller.getPlayerList();
-                          
-                            console.log('在线玩家列表 = ' +JSON.stringify(List));
-                            // console.log('房间列表 = ' +JSON.stringify(roomList));
-                                
-
                                 console.log('socket = '+socket);
                                 socket.emit('start',data);
                                 console.log(JSON.stringify(allPlayer[i])  + '他还活着')
@@ -574,15 +552,15 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
 
 
                     //  之后需要做的检测死亡需要做什么
-                    // _delayWaitTime =  setTimeout(function(){    //  检测死亡需要做什么
-                    //     for(let i=0;i<allPlayer.length;i++){
-                    //         if(allPlayer[i].player.accountID === myId){
-                    //             allPlayer.splice(i, 1);
-                    //             console.log('他死了')
-                    //         }
+                    _delayWaitTime =  setTimeout(function(){    //  检测死亡需要做什么
+                        for(let i=0;i<allPlayer.length;i++){
+                            if(allPlayer[i].player.accountID === myId){
+                                allPlayer.splice(i, 1);
+                                console.log('他死了')
+                            }
                         
-                    //     }
-                    // },30000)
+                        }
+                    },3000)
                 }else{
                     console.log('心跳连接发生错误，socket为false')
                 }

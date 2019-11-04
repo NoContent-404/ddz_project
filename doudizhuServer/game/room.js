@@ -74,6 +74,8 @@ module.exports = function (spec, player) {
     let _canPutCardPlayer = undefined;  //  能出牌玩家
     let _recordrobMaterList = [];     //  记录抢地主次数
     let _robMaterNum = 0;
+    let _masterRHO = undefined; //  地主的上家
+    let _masterNextHome = undefined;    //  地主下家
 
 
  
@@ -103,9 +105,9 @@ module.exports = function (spec, player) {
 
     let _state = RoomState.Invalide;
     const setState = function (state) {
-        if (state === _state) {
-            return
-        }
+        // if (state === _state) {
+        //     return
+        // }
         switch (state) {
             case RoomState.WaitingReady:
                 break;
@@ -156,6 +158,24 @@ module.exports = function (spec, player) {
                 for (let i = 0; i < _playerList.length; i++) {
                     if (_playerList[i].accountID === _master.accountID) {
                         _masterIndex = i;
+
+                        //  确定上下家
+                        switch(_masterIndex){
+                            case 0 : 
+                                _masterRHO = _playerList[2] 
+                                _masterNextHome =_playerList[1]
+                            break;
+
+                            case 1 : 
+                                _masterRHO = _playerList[0] 
+                                _masterNextHome =_playerList[2]
+                            break;
+                            default :
+                                 _masterRHO = _playerList[1] 
+                                _masterNextHome =_playerList[0]
+                            break;
+                        }
+                        
                     }
                 }
                 turnPushCardPlayer();
@@ -178,7 +198,7 @@ module.exports = function (spec, player) {
                 avatarUrl: player.avatarUrl,
                 gold: player.gold,
                 seatIndex: player.seatIndex,
-                
+
             })
         }
 
@@ -200,13 +220,6 @@ module.exports = function (spec, player) {
 
         for (let i = 0; i < _playerList.length; i++) {
 
-                // _playerList[i].sendPlayerJoinRoom({
-                //    roomPlayerMsg : _playerList
-                // })
-                // if(player.accountID === _playerList[i].accountID){
-                //     _playerList[i].sendRePushCard(_threeCardsList[3]);
-                // }
-                
                     _playerList[i].sendPlayerJoinRoom({
                         nickName: player.nickName,
                         accountID: player.accountID,
@@ -220,7 +233,7 @@ module.exports = function (spec, player) {
                 
 
         }
-        // _playerList.push(player);
+    
     };
 
   /****************************   重连加入玩家end    ******************************** */
@@ -270,7 +283,7 @@ module.exports = function (spec, player) {
                 seatIndex: _playerList[i].seatIndex
             });
         }
-        // let index = getSeatIndex(_playerList);
+       
 
         
 
@@ -394,17 +407,16 @@ module.exports = function (spec, player) {
 
     //  提示
     that.playerRequestTips = function (player, cb) {
+        if(_notPushCardNumber === 2){
+            _currentPlayerPushCardList = undefined;
+        }
         let cardList = player.cards;
         if (cb){
-            // let list = [];
+   
 
             let cardsList = _carder.getTipsCardsList(_currentPlayerPushCardList, cardList);
             console.log('提示牌组  = ' + JSON.stringify(cardsList) );
-            // for (let i = 0 ; i < cardList.length ; i ++){
-            //     let cards = [];
-            //     cards.push(cardList[i]);
-            //     list.push(cards);
-            // }
+        
             cb(null, cardsList);
         }
     };
@@ -434,7 +446,8 @@ module.exports = function (spec, player) {
             _rate = _rate * 2;
             if(_robMaterNum === 3 ){
                 if(_recordrobMaterList[0].accountID === player.accountID){
-                    _master = player
+                    _master = player;
+                    
                 }
                 
                 
@@ -461,8 +474,10 @@ module.exports = function (spec, player) {
             _playerList[i].sendPlayerRobStateMater(player.accountID, value);
         }
 
-
-        turnPlayerRobMater();   //  轮到下一个玩家抢
+       
+            turnPlayerRobMater();   //  轮到下一个玩家抢
+        
+        
     };
 
     const changeHouseManager = function () {    //  改变房主
@@ -507,7 +522,6 @@ module.exports = function (spec, player) {
                     _playerList[i].sendNoMaster(_playerList);
                 }
                 _state = 2;
-                // setState(RoomState.PushCard);   //  重新发牌
             }else{
                 changeMaster();
             }
@@ -543,12 +557,10 @@ module.exports = function (spec, player) {
     };
 
 
-    // const gameStart = function () {
-    //     for (let i = 0 ; i < _playerList.length ; i ++){
-    //         _playerList[i].sendGameStart();
-    //     }
-    // };
-    that.playerOffLine = function (player) {    //  删除掉线玩家
+  /**
+   *       删除掉线玩家
+   */
+    that.playerOffLine = function (player) {   
         for (let i = 0; i < _playerList.length; i++) {
             if (_playerList[i].accountID === player.accountID) {
 
@@ -563,17 +575,21 @@ module.exports = function (spec, player) {
 
     
 
-
+    /**
+     *  发送玩家准备状态
+     */
     that.playerReady = function (player) {
         for (let i = 0; i < _playerList.length; i++) {
             _playerList[i].sendPlayerReady(player.accountID);
         }
     };
-    that.houseManagerStartGame = function (player, cb) {
-        //  defines.roomFullPlayerCount = 3
-    
-        if (_playerList.length !== defines.roomFullPlayerCount) {
 
+    /**
+     *  是否可以开始游戏
+     */
+    that.houseManagerStartGame = function (player, cb) {
+
+        if (_playerList.length !== defines.roomFullPlayerCount) {
 
             if (cb) {
                 cb('玩家不足，不能开始游戏!');
@@ -593,7 +609,6 @@ module.exports = function (spec, player) {
         if (cb) {
             cb(null, 'success');
         }
-        // gameStart();
         setState(RoomState.StartGame);
     };
 
@@ -630,7 +645,7 @@ module.exports = function (spec, player) {
                 if(err){
                     console.log('更新错误 = '+ err);
                 }else{
-                    if(_playerList[i].isrobot !== undefined){
+                    if(_playerList[i].isrobot !== true){
                        client.send_command('lset',['user:' +_playerList[i].uniqueID+':data',0,JSON.stringify( pldata)], function(err,data) {
                             console.log(data);          // OK
                         })
@@ -698,9 +713,7 @@ module.exports = function (spec, player) {
     var msg = function(){
         for (let i = 0; i < _playerList.length; i++) {  //  发送结束消息
 
-            // if(_playerList[i].isOnLine === false){
-            //         that.playerLeave(_playerList[i]);
-            // }
+ 
             if(_playerList[i].isrobot !== undefined){
                 that.playerLeave(_playerList[i]);
                 i--;
@@ -828,12 +841,25 @@ module.exports = function (spec, player) {
         console.log(' _room 掉线玩家数据 = ' + JSON.stringify(player));
        if(player.isOnLine === false || player.isTrusteeship === true){
             if(_state > 1 && _state < 4){
+            //     let l=[];
+            //     for(let i=0;i<_playerList.length;i++){
+            //         if(player.accountID !== _playerList[i].accountID){
+            //             let  weigth = player._robot.getweigth(_playerList[i].cards, _threeCardsList[3], _currentPlayerPushCardList);
+            //             l.push(weigth);
+            //         }
+            //     }
+            //    let  myWeigth = player._robot.getweigth(player.cards, _threeCardsList[3], _currentPlayerPushCardList);
+            //    console.log('其他玩家价值 =>' + l);
+            //    console.log('价值 =>' + myWeigth);
+            //    var max = Math.max.apply(null, l);
+
                 if(_canRobPlayer.accountID === player.accountID){   //  掉线玩家让他不抢地主
-                    // for(let i=0;i<_playerList.length;i++){
-                    //     _playerList[i].sendPlayerRobStateMater(player.accountID,'no-ok');
+                    // if(myWeigth >= max){
+                    //     that.playerRobStateMaster(player,'ok')
+                    // }else{
+                        that.playerRobStateMaster(player,'no-ok')
                     // }
-                    // turnPlayerRobMater();   //  轮到下一个玩家抢
-                    that.playerRobStateMaster(player,'no-ok')
+                    
                 }
                 console.log('进入抢地主状态');
                 return;
@@ -842,6 +868,10 @@ module.exports = function (spec, player) {
             if(_state > 2){ //  出牌阶段
                 let lostPlayerCardList = player.cards;
 
+                if(_canPutCardPlayer.accountID !== player.accountID){
+                    return;
+                }
+
                 if(_currentPlayerPushCardListPlayer === undefined){
 
                 }else{
@@ -849,34 +879,42 @@ module.exports = function (spec, player) {
                         _currentPlayerPushCardList = undefined;
                     }
                 }
+
+
+                
                
                 // cardsValue = _carder.isCanPushCards(_currentPlayerPushCardList); //  返回我出的牌的类型    三张：Three
                 cardsList = _carder.getTipsCardsList(_currentPlayerPushCardList, lostPlayerCardList);  //  获取提示牌组
-                
+
+
+
+                if(_masterNextHome.accountID === player.accountID ){
+                    if(_currentPlayerPushCardListPlayer.accountID !== _master.accountID){
+                        that.playerPushCard(player,[],cb);
+                        return;
+                    }
+                }
+
+
                 console.log('提示牌组  = ' + JSON.stringify(cardsList) );
-                if(player.accountID === _canPutCardPlayer.accountID){
+                if(player.accountID === _canPutCardPlayer.accountID){   //  如果当前是我的出牌阶段
                     if(cardsList.length !== 0){
 
                         if(player.isrobot){ //  机器人出牌
-                            
                         let cardsValue;
-
                         let robot ;
                         if(_currentPlayerPushCardList !== undefined){
                              cardsValue = _carder.isCanPushCards(_currentPlayerPushCardList); //  返回我出的牌的类型    三张：Three
                         }
-                       
-                        robot = player._robot.spliceCards(player.cards,cardsValue,_currentPlayerPushCardList);
+                        
+                        robot = player._robot.robotTips(player.cards,cardsValue,_currentPlayerPushCardList);
                         if(cardsList.length === 1 && cardsList[0].length === 2){
                             if( cardsList[0][0].value === undefined && cardsList[0][1].value === undefined){
                                 robot = cardsList;
                             }
                         }
                         cardsList = [];
-                    //     if(cardsValue === undefined){
-                    //         console.log(typeof robot[0]);
-                    //         console.log(cardsValue);
-                    //    }
+             
 
                         if(_currentPlayerPushCardList !== undefined){
                           
@@ -933,7 +971,15 @@ module.exports = function (spec, player) {
                             }
                         }
                         }else{
-                            that.playerPushCard(player,cardsList,cb);   //  不要
+                            // that.playerPushCard(player,cardsList,cb);   //  不要
+
+
+                            if(cb){
+                                if(cb){
+                                    cb(null,'托管,但是还没有到我出牌');
+                                }
+                            }
+                            return;
                             
                         }
                      

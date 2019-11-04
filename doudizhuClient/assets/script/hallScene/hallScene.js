@@ -44,6 +44,10 @@ cc.Class({
             if(err){
                 console.log(err);
             }else{
+
+                if(data.data.master !== null){
+                    global.master = data.data.master.uniqueID;//地主
+                }
                 console.log('查询玩家的游戏信息为'+ JSON.stringify(data))
                 global.socket.requestJoinRoom(data.data.roomID,(err, data)=>{   //  重新加入房间
                     if (err){

@@ -6,13 +6,9 @@ const Carder = require('./carder');
 module.exports = function(){
     let that ={};
 
-    // that.kingBoom = {};
     
     let robot = undefined;
-    let robot1 = undefined;
-    // that.getKBoom = function(){
-    // return kingBoom;
-    // }
+ 
 
     that.getRobot = function (data){
         return robot;
@@ -36,7 +32,88 @@ that.selectRobot = function(palyer,data,socket,room,cb){
 
 
 
- const splitPlayerCards = function(cards,cardsValue,PlayerPushCardList){
+const getPlayerWeigth = function (playerCardsList, buttonCardsList,  pushCards) {   //  获取手牌价值
+    let weigth = 0;
+    let playerCards =  JSON.parse(JSON.stringify(playerCardsList)); //  复制数组 
+    let buttonCards =  JSON.parse(JSON.stringify(buttonCardsList)); //  复制数组 
+    for(let i=0;i<buttonCards.length;i++){
+        playerCards.push(buttonCards[i]);
+    }
+
+    let map = splitPlayerCards(playerCards,pushCards);
+
+    //  炸弹
+    if(map.kingBoom.length > 0){
+        weigth = weigth + 14;
+    }
+    if(map.fourBoom.length > 0){
+        weigth = weigth + 13;
+    }
+
+    //  飞机
+    if(map.planeWithOne.length > 0){
+        weigth = weigth + 12;
+    }
+    if(map.planeWithTow.length > 0){
+        weigth = weigth + 11;
+    }
+    if(map.plane.length > 0){
+        weigth = weigth + 10;
+    }
+
+
+    
+
+
+    //  顺子
+    if(map.doubleScroll.length > 0){
+        weigth = weigth + 9;
+    }
+    if(map.scroll.length > 0){
+        weigth = weigth + 8;
+    }
+    if(map.threeWithOne.length > 0){
+        weigth = weigth + 7;
+    }
+
+
+
+
+    //  3张
+    if(map.threeWithOne.length > 0){
+        weigth = weigth + 6;
+    }
+    if(map.threeWithDouble.length > 0){
+        weigth = weigth + 5;
+    }
+    if(map.threeCardsList.length > 0){
+        weigth = weigth + 4;
+    }
+
+
+
+    //  对子
+    if(map.doubleList.length > 0){
+        weigth = weigth + 3;
+    }
+    if(map.solaList.length > 0){
+        for(let i=0;i<map.solaList.length;i++ ){
+            if(map.solaList[i].value === undefined){
+                weigth = weigth + 2;
+            }
+            if(map.solaList[i].value === 13){
+                weigth = weigth + 1;
+            }
+        }
+       
+    }
+    
+    return weigth;
+};
+
+
+
+ const splitPlayerCards = function(cards,PlayerPushCardList){
 
     let playerCards =  JSON.parse(JSON.stringify(cards)); //  复制数组  
 
@@ -54,11 +131,13 @@ that.selectRobot = function(palyer,data,socket,room,cb){
    let kBoom = getKingBoom(playerCards);
    let kingBoom = [];
     if(kBoom){
-        for(let i=0;i<kBoom;i++){
-            kingBoom.push(kBoom[i]);
+        let l = [];
+        for(let i=0;i<kBoom.length;i++){
+           l.push(kBoom[i]);
         }
+        kingBoom.push(l);
       
-        // weigth = weigth + 3;
+        
         for(let i=0;i<playerCards.length;i++){
             
             if(playerCards[i].value === undefined){
@@ -107,7 +186,6 @@ that.selectRobot = function(palyer,data,socket,room,cb){
     let threeCardsList = getRepeatCardsList(3,playerCards);
     if(threeCardsList.length>0){
     
-        
         let del;
         for(let i=0;i<playerCards.length;){
              del = false;
@@ -282,63 +360,151 @@ that.selectRobot = function(palyer,data,socket,room,cb){
     
 
 
-    let value ;
+    kingBoom, fourBoom,threeCardsList,solaList,doubleList,scroll,doubleScroll,
+    threeWithOne,threeWithDouble,plane,planeWithOne,planeWithTow
+    let map = {};
+    
+    map['kingBoom'] = kingBoom
+    map['fourBoom'] = fourBoom
+    map['threeCardsList'] = threeCardsList
+    map['solaList'] = solaList
+    map['doubleList'] = doubleList
+    map['scroll'] = scroll
+    map['doubleScroll'] = doubleScroll
+    map['threeWithOne'] = threeWithOne
+    map['threeWithDouble'] = threeWithDouble
+    map['plane'] = plane
+    map['planeWithOne'] = planeWithOne
+    map['planeWithTow'] = planeWithTow
+
+   
+    
+
+    // let value ;
  
+    // if(cardsValue === undefined){
+    //     value = 'no';
+    // }else{
+    //     value = cardsValue.name;
+    // }
+    // //  返回牌组
+    // switch(value){
+    //     case 'One' : 
+    //          return solaList;   //  单张
+    //     case 'Double' :
+    //          return doubleList;  //  对子
+    //     case 'Three' : 
+    //          return threeCardsList;   //   三张
+    //     case 'Boom' :
+    //          return fourBoom;  //  4炸弹
+    //     case 'ThreeWithOne' :
+    //          return threeWithOne;  //  3带1
+    //     case 'ThreeWithTwo' :
+    //          return threeWithDouble;   //  3带对子
+    //     case 'Plane' :
+    //          return plane;     //  飞机
+    //     case 'PlaneWithOne' :
+    //          return planeWithOne;  //  飞机带单张
+    //     case 'PlaneWithTwo' :
+    //          return planeWithTow;  //  飞机带对子
+    //     case 'Scroll' : 
+    //          return scroll;  //  单顺
+    //     case 'DoubleScroll' :
+    //          return doubleScroll;  //  连对
+    //     case 'FourWithOne' :
+    //          return fourBoom;   //  4带1
+    //     case 'FourWithTow' :
+    //          return fourBoom;   //  4带对子
+
+    //     default :
+    //         let canPushCardsList = getCanPushCardsList(kingBoom, fourBoom,threeCardsList,
+    //                                                     solaList,doubleList,scroll,doubleScroll,
+    //                                                     threeWithOne,threeWithDouble,plane,planeWithOne,
+    //                                                     planeWithTow);
+
+    //     console.log('Robot 自动出牌数据 =》' + canPushCardsList)
+    //     return canPushCardsList;
+    // }
+
+
+
+
+
+
+
+
+    return map;
+
+};
+
+
+
+const getTips = function (cards,cardsValue,PlayerPushCardList) {
+    
+    let map = splitPlayerCards(cards,PlayerPushCardList);
+    console.log('数据 =>' + map.doubleList)
+
+    for(let i in map){
+        if(map[i] === undefined){
+            map[i] = [];
+        }
+    }
+
+    let value ;
+   
     if(cardsValue === undefined){
         value = 'no';
     }else{
         value = cardsValue.name;
     }
     //  返回牌组
-
     switch(value){
         case 'One' : 
-             return solaList;   //  单张
+             return map.solaList;   //  单张
         case 'Double' :
-             return doubleList;  //  对子
+             return map.doubleList;  //  对子
         case 'Three' : 
-             return threeCardsList;   //   三张
+             return map.threeCardsList;   //   三张
         case 'Boom' :
-             return fourBoom;  //  4炸弹
+             return map.fourBoom;  //  4炸弹
         case 'ThreeWithOne' :
-             return threeWithOne;  //  3带1
+             return map.threeWithOne;  //  3带1
         case 'ThreeWithTwo' :
-             return threeWithDouble;   //  3带对子
+             return map.threeWithDouble;   //  3带对子
         case 'Plane' :
-             return plane;     //  飞机
+             return map.plane;     //  飞机
         case 'PlaneWithOne' :
-             return planeWithOne;  //  飞机带单张
+             return map.planeWithOne;  //  飞机带单张
         case 'PlaneWithTwo' :
              return planeWithTow;  //  飞机带对子
         case 'Scroll' : 
-             return scroll;  //  单顺
+             return map.scroll;  //  单顺
         case 'DoubleScroll' :
-             return doubleScroll;  //  连对
+             return map.doubleScroll;  //  连对
         case 'FourWithOne' :
-             return fourBoom;   //  4带1
+             return map.fourBoom;   //  4带1
         case 'FourWithTow' :
-             return fourBoom;   //  4带对子
+             return map.fourBoom;   //  4带对子
 
         default :
-            let canPushCardsList = getCanPushCardsList(kingBoom, fourBoom,threeCardsList,
-                                                        solaList,doubleList,scroll,doubleScroll,
-                                                        threeWithOne,threeWithDouble,plane,planeWithOne,
-                                                        planeWithTow);
+            let canPushCardsList = getCanPushCardsList(map.kingBoom, map.fourBoom,map.threeCardsList,
+                map.solaList,map.doubleList,map.scroll,map.doubleScroll,
+                map.threeWithOne,map.threeWithDouble,map.plane,map.planeWithOne,
+                map.planeWithTow);
 
         console.log('Robot 自动出牌数据 =》' + canPushCardsList)
         return canPushCardsList;
-    }
-
-
-
-
-
-
-
-
-    // return sola;
-
+        }        
 };
+
+
+
+
+
+
+
+
+
 
  
 
@@ -546,47 +712,6 @@ const getDoubleScorllCardsList = function (Dcards) { //  获取双顺子
         }
     }
 
-
-
-
-
-    // let groupList = [];
-    // let keys = Object.keys(map);
-    //         keys.sort((a, b) => {
-    //             return Number(a) - Number(b);
-    //         });
-    //         let noConnect = -1; //  记录断开位置
-    //         for (let i = 0; i < (keys.length - 1); i++) {
-    //             let getList = [];
-    //             if (Math.abs(Number(keys[i]) - Number(keys[i + 1])) !== 1) {
-                   
-    //                 for(let j=i;j>-1;j--){
-    //                     for(let k=0;k<map[keys[i]].length;k++){ 
-    //                         getList.unshift(map[keys[j]][k]);
-    //                     }
-    //                 }
-    //                 noConnect = i;
-    //                 if(getList.length > 5 ){
-    //                     groupList.push(getList)
-    //                 }
-                    
-    //             }else{
-    //                 if(i === keys.length - 2){
-    //                     for(let j=i+1;j>noConnect;j--){
-    //                         for(let k=0;k<map[keys[j]].length;k++){
-    //                             getList.unshift(map[keys[j]][k]);
-    //                         }
-                            
-    //                     }
-    //                     if(getList.length > 5){
-    //                         groupList.push(getList);
-    //                     }
-                        
-                        
-    //                 }
-    //             }
-            // }
-
     console.log('所有的连对对子' + groupList)
     return groupList;
 };
@@ -666,8 +791,16 @@ const getThreeWithDouble = function (three, Double) {
 
     //  飞机
     const getPlane = function(cards,cardsA){
+        console.log('飞机');
+        let cardsList = [];
         let list = getRepeatCardsList(3,cards);
-        
+
+        if(list.length < 1 ){
+            console.log('没有飞机，返回 []')
+            return cardsList;
+        }
+
+
 
         let map = {};
         for (let i = 0 ; i < list.length ; i ++){
@@ -737,7 +870,7 @@ const getThreeWithDouble = function (three, Double) {
 
             }
         }
-        let cardsList = [];
+       
         if(cardsA !== undefined ){
            
             for (let i = 0 ; i < tempCardsList.length ; i ++){
@@ -756,7 +889,7 @@ const getThreeWithDouble = function (three, Double) {
         }
         console.log('飞机数据 =》' + cardsList)
         return cardsList;
-    }
+    };
 
 
     const getPlaneWithOne = function(myCards,mySolaList,PlayerPushCardList){ //  飞机带单
@@ -878,30 +1011,13 @@ const getCanPushCardsList = function(kingBoom, fourBoom,threeCardsList,solaList,
     }
 };
 
-// };
-// const getCardsValue = function (cardList) {
-//     // return true;
-//     if (cardList.name === 'One') {
-//         console.log('单张牌');
-//         console.log('返回单张 = ' + JSON.stringify(that.sola));
-//         return that.sola;
-//     }
-//     return 'false';
-    
-// };
-that.spliceCards = splitPlayerCards;    //  机器人牌型拆分
-// that.getRorbotCards = getCardsValue;
 
+that.spliceCards = splitPlayerCards;    //  机器人牌型拆分
+
+that.robotTips = getTips;   //  获取出牌提示
+
+that.getweigth = getPlayerWeigth;   //  获取价值
 return that;
 
 }
 
-
-
-
-
-// exports.createRobot = function (data) { //  创建机器人
-//     let player = Player(data, socket, null, this,robot);
-//     _playerList.push(player);
-//     console.log('在线玩家人数 = '+_playerList.length)
-// };

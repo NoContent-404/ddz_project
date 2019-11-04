@@ -72,7 +72,7 @@ module.exports = function () {
             }
         }
 
-        //  测试牌组
+        // //  测试牌组
         let cardList = [
             Card(CardValue['3'], CardShape.C),
             Card(CardValue['3'], CardShape.C),
@@ -137,10 +137,10 @@ module.exports = function () {
             Card(CardValue['10'], CardShape.C),
             Card(CardValue['10'], CardShape.C),
             Card(CardValue['J'], CardShape.C),
-            Card(CardValue['J'], CardShape.C),
+            // Card(CardValue['J'], CardShape.C),
             // Card(CardValue['Q'], CardShape.C),
             // Card(CardValue['J'], CardShape.C),
-            // Card(undefined, undefined, Kings.k),
+            Card(undefined, undefined, Kings.k),
             Card(undefined, undefined, Kings.K),
 
         ];
@@ -1308,7 +1308,7 @@ module.exports = function () {
 
     that.tipsBoom = function (cardsA, cardsB) { //  提示炸弹
         let cardsList = [];
-        if (cardsA.length === 2) {
+        if (cardsA.length === 2 && cardsA[0].value === undefined) {
             return cardsList;
         } else {
             let list = getRepeatCardsList(4, cardsB);

@@ -47,11 +47,15 @@ exports.selectPlayer = function(data,player,cb){  //  搜索玩家
 
                     console.log('重连获取的房间信息 = ' + _roomList[i].roomID)
                     // socket.emit('reconnection',_roomList[i].roomID);
+                    let master = _roomList[i].getRoomMaster();
+                    if(master === undefined){
+                        master = null
+                    }
                     if (cb) {
                         
                         cb(null, {
                             roomID: _roomList[i].roomID,
-                            master: _roomList[i].setRoomMaster
+                            master: master
                         });
                     }
                     return rpList[j];
@@ -62,9 +66,9 @@ exports.selectPlayer = function(data,player,cb){  //  搜索玩家
 }
 
 exports.createPlayer = function (data, socket, callBackIndex) {
-    let player
+    
   
-    player = Player(data, socket, callBackIndex, this,robot);
+    let player = Player(data, socket, callBackIndex, this,robot);
     _playerList.push(player);
 };
 
