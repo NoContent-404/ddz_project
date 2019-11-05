@@ -22,6 +22,7 @@ exports.selectPlayer = function(data,player,cb){  //  搜索玩家
         console.log('房间状态 = ' + _roomList[i].getRoomState())
         roomState = _roomList[i].getRoomState();
         if(roomState >= 2){ //  当房间正在进行游戏的时候
+            let RMPLList = _roomList[i].getRobMaterPlayerList();
             for(let j=0;j<rpList.length;j++){
                 if(data == rpList[j].accountID){
                     rpList[j].isOnLine = true;
@@ -29,21 +30,21 @@ exports.selectPlayer = function(data,player,cb){  //  搜索玩家
                     player.uniqueID =  rpList[j].uniqueID;
                     player.nickName =  rpList[j].nickName;
                     player.avatarUrl =  rpList[j].avatarUrl;
+                    player.isReady =  rpList[j].isReady;
                     player.accountID =  rpList[j].accountID;
                     player.gold =  rpList[j].gold;
                     player.seatIndex =  rpList[j].seatIndex;
                     player.isTrusteeship =  rpList[j].isTrusteeship;
 
                     rpList.splice(j,1,player);
-                    // console.log('ssssssss' + JSON.stringify(player))
                     _playerList.splice(j,1,player);
-                    // console.log('你在房间 = ' + _roomList[i].roomID);
-                    // console.log('你在房间的房间信息 = ' + JSON.stringify(_roomList[i]) );
-                    // console.log('你现在房间的信息为 = ' + JSON.stringify(rpList[j]))
-                    // console.log('底：'+_roomList[i].bottom+'倍: ' + _roomList[i].rate)
-                    // rpList[j].sendSelectPlayerMessage({
-                    //     roomID : _roomList[i].roomID
-                    // })
+                    for(let k = 0;k<RMPLList.length;k++){
+
+                        if(data == RMPLList[k].accountID){
+                            RMPLList.splice(k,1,player);
+                        }
+
+                    }
 
                     console.log('重连获取的房间信息 = ' + _roomList[i].roomID)
                     // socket.emit('reconnection',_roomList[i].roomID);

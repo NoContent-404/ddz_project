@@ -103,7 +103,10 @@ module.exports = function (spec, player) {
         return _master;
     };
 
- 
+    that.getRobMaterPlayerList = function(){
+        return _robMaterPlayerList;
+    };
+    
 
     let _state = RoomState.Invalide;
     const setState = function (state) {
@@ -649,7 +652,7 @@ module.exports = function (spec, player) {
         let player = _robMaterPlayerList.pop();
         _canRobPlayer = player; //  记录
 
-        robMaterTime =setTimeout(() => {
+        robMaterTime = setTimeout(() => {
             _canRobPlayer.sendTimeOutNoRob([]);
             that.playerRobStateMaster(_canRobPlayer,'no-ok');
         }, _time);
@@ -666,10 +669,9 @@ module.exports = function (spec, player) {
 
         _time = 13000
         for (let i = 0; i < _playerList.length; i++) {  //  发送玩家能抢地主的状态
-		animeDelayTime = setTimeout(() => {
-                   
-                   _playerList[i].sendPlayerCanRobMater(player.accountID,_time);
-                }, _animeDelayTime);
+		    animeDelayTime = setTimeout(() => {
+                _playerList[i].sendPlayerCanRobMater(player.accountID,_time);
+            }, _animeDelayTime);
            
         }
     };
@@ -677,6 +679,7 @@ module.exports = function (spec, player) {
 
 
     const changeMaster = function () {
+        clearTimeout(animeDelayTime);
         clearTimeout(robMaterTime);
         for (let i = 0; i < _playerList.length; i++) {
             console.log('地主'+_master)

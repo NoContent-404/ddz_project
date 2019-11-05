@@ -72,7 +72,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
     
     _socket.on('disconnect', ()=>{
         console.log('玩家掉线');
-
+        
         that.isOnLine = false;
         that.isTrusteeship = false; //  变回非托管状态
         let  List1 =   gameContorller.getPlayerList();            
@@ -80,6 +80,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         if (_room){
             if(_room.getRoomState() <=1){
                 _room.playerOffLine(that);
+                that.isReady = false;
                 if(_room.getPlayerList().length === 0){
                     gameContorller.reMove(_room);
                 }
@@ -103,12 +104,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         let callBackIndex = notifyData.callBackIndex;
         // console.log(_room);
        
-        if(_room){
-            console.log('房间状态 = '+_room.getRoomState())
-            if(_room.getRoomState() === 6){
-                
-            }
-        }
+        
         
         
         switch (type){
@@ -416,11 +412,11 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
     that.sendPlayerLeave = function (data) {  //  离开
         notify('leave-player', data, null);
     };
-
-
-    that.sendPlayerCanRobMater = function (data) {
-        notify('can-rob-master', data, null);
+    that.sendPlayerCanRobMater = function (data,time) {
+        notify('can-rob-master', {uid: data, time : time}, null);
     };
+
+
     that.sendPlayerRobStateMater = function (accountID, value , rate) {    //  向客户端发送玩家抢的状态
         notify('player-rob-state', {accountID: accountID, value: value , rate : rate}, null);
     };
