@@ -60,6 +60,7 @@ cc.Class({
             }
         });
         global.socket.onPlayerRobState((data)=>{
+            this.rateLabel.string = '倍:' + data.rate
             for (let i = 0 ; i < this.playerNodeList.length ; i ++){
                 this.playerNodeList[i].emit('rob-state', data);
             }
@@ -76,6 +77,8 @@ cc.Class({
             }
         });
         global.socket.onPlayerPushCard((data)=>{
+
+            this.rateLabel.string = '倍:' + data.rate
             console.log('player push card = ' + JSON.stringify(data));
             for (let i = 0 ; i < this.playerNodeList.length ; i ++){
                this.playerNodeList[i].emit('player-push-card', data);

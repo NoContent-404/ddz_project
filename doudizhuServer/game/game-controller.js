@@ -75,7 +75,7 @@ exports.createPlayer = function (data, socket, callBackIndex) {
 exports.createRobot = function (data, socket,AI) { //  创建机器人
     let player = Player(data, socket, null, this,AI);
     _playerList.push(player);
-    console.log('在线玩家人数 = '+_playerList.length)
+    // console.log('在线玩家人数 = '+_playerList.length)
     return player;
    
 };

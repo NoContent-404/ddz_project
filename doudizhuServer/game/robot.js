@@ -426,13 +426,6 @@ const getPlayerWeigth = function (playerCardsList, buttonCardsList,  pushCards) 
     //     return canPushCardsList;
     // }
 
-
-
-
-
-
-
-
     return map;
 
 };

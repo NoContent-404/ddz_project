@@ -14,7 +14,7 @@ cc.Class({
         if(this.GetUrlPara(id) != ""){
 
             if (this.GetUrlPara(id) == "no") {
-                window.location.href="http://192.168.1.251:8092/pages/websiteAuthorh/index.html?appId=sk1bff720bb1364622&callbackUrl=http://192.168.1.4:3000/login";
+                window.location.href="http://192.168.1.251:8092/pages/websiteAuthorh/index.html?appId=sk1bff720bb1364622&callbackUrl=http://192.168.56.1:3000/login";
                 console.log("无ID");
             } else {
                 console.log("有ID");
@@ -100,7 +100,7 @@ cc.Class({
         let id = 'unique_id';
          this.GetUrlPara(id);
         if(this.GetUrlPara(id)== ""){
-            window.location.href="http://192.168.1.4:3000/cookie";
+            window.location.href="http://192.168.56.1:3000/cookie";
         }else {
 
         }

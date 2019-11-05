@@ -102,6 +102,13 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         console.log('notify data = ' + JSON.stringify(notifyData.data));
         let callBackIndex = notifyData.callBackIndex;
         // console.log(_room);
+       
+        if(_room){
+            console.log('房间状态 = '+_room.getRoomState())
+            if(_room.getRoomState() === 6){
+                
+            }
+        }
         
         
         switch (type){
@@ -156,6 +163,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                 }
                 break;
             case 'ready':   //   准备
+                
                 if(that.isReady){
                     that.isReady = false;
                 }else{
@@ -250,6 +258,8 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                 break;
             case 'myself-push-card':    //  我出的牌
                 if (_room){
+
+                    
                     _room.playerPushCard(that, notifyData.data, (err, data)=>{
                         if (err){
                             notify('myself-push-card', {err: err}, callBackIndex);
@@ -389,8 +399,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         notify('push_card', cards, null);
     };
 
-
-
+  
 
     that.sendNoMaster = function (data) {  //  告诉客户端没有地主要重新发牌
         console.log("你要重新发牌");
@@ -412,8 +421,8 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
     that.sendPlayerCanRobMater = function (data) {
         notify('can-rob-master', data, null);
     };
-    that.sendPlayerRobStateMater = function (accountID, value) {    //  向客户端发送玩家抢的状态
-        notify('player-rob-state', {accountID: accountID, value: value}, null);
+    that.sendPlayerRobStateMater = function (accountID, value , rate) {    //  向客户端发送玩家抢的状态
+        notify('player-rob-state', {accountID: accountID, value: value , rate : rate}, null);
     };
     that.sendChangeMaster = function (player, cards) {  //  发送客户端谁是地主
         if (that.accountID  === player.accountID){
@@ -428,8 +437,8 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
     that.sendShowBottomCard = function (data) {
         notify('show-bottom-card' , data);
     };
-    that.sendPlayerCanPushCard = function (data, notPushCardNumber) {
-        notify('can-push-card', {uid: data, count: notPushCardNumber});
+    that.sendPlayerCanPushCard = function (data, notPushCardNumber,time) {
+        notify('can-push-card', {uid: data, count: notPushCardNumber , time : time});
     };
     that.sendPlayerLost = function (data) { //  发送玩家丢失
         notify('lost-connection', {uid: data},null);
@@ -441,6 +450,27 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         notify('trusteeship-card', {data: data},null);
     };
 
+
+
+    that.sendTimeout = function (data) {  //  发送超时信息
+        
+        notify('time-out', {data: data}, null);
+    };
+
+    that.sendTimeOutCard = function (data) { //  发送超时卡牌信息
+        notify('time-Out-Card', {data: data}, null);
+    };
+
+    
+    that.sendTimeOutNoCard = function (data) { //  发送超时卡牌信息
+        notify('time-out-noCard',data, null);
+    };
+
+    that.sendTimeOutNoRob = function (data) { //  发送超时卡牌信息
+        notify('time-out-noRob',data, null);
+    };
+
+    
 
 
     that.getRoom = function(){
@@ -478,6 +508,11 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         // console.log('房间号 = ' + _room.roomID)
         
         if(that.cards.length === 0){
+
+
+
+
+
             //  判断输赢
             if(that.isrobot){
                 console.log('机器人结束了')

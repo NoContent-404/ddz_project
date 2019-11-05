@@ -46,6 +46,50 @@ cc.Class({
         });
 
 
+        global.socket.onPlayeTimeOutCard((data) => {
+            console.log('onPlayeTimeOutCard = ' + JSON.stringify(data));
+            console.log('choose card data list =' + JSON.stringify(data));
+            let cards = data.data.cards;
+            if(global.playerData.accountID === data.data.accountID){
+
+                for (let i = 0; i < this.cardList.length; i++) {
+                    this.cardList[i].emit('pushed-card', cards);
+                }
+    
+                for (let i = 0; i < cards.length; i++) {
+                    let cardData = cards[i];
+                    for (let j = 0; j < this.cardList.length; j++) {
+                        let card = this.cardList[j];
+                        console.log('choose card data list1 =' + card.getComponent('card').id);
+                        console.log('choose card data list2 =' + cardData.id);
+                        if (card.getComponent('card').id === cardData.id) {
+                            this.cardList.splice(j, 1);
+                        }
+                    }
+                }
+                console.log('牌的数量' + this.cardList.length);
+                console.log('push card data = ' + JSON.stringify(data));
+                this.playUI.active = false;
+                this.chooseCardDataList = [];
+                this.referCardsPos();
+            }
+            
+        });
+
+
+
+        global.socket.onPlayeTimeOutNoCard((data) => { //  超时不出牌
+            this.playUI.active = false;
+            
+        });
+
+        global.socket.onPlayeTimeOutNoRob((data) => { //  超时不抢地主
+            console.log('超时不抢地主')
+            this.robUI.active = false;
+            
+        });
+
+
 
         global.socket.onPlayerPushCardType((data) => { //  托管出牌
             console.log(' gggg ' + JSON.stringify(data) );
@@ -172,6 +216,13 @@ cc.Class({
             //     this.playerNodeList[i].emit('player-push-card', data);
             // }
         });
+
+
+
+
+
+
+
         this.node.on('master-pos', (event) => {
             let detail = event.detail;
             this.masterPos = detail;

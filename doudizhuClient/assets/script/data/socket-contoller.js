@@ -182,15 +182,21 @@ const SocketController  = function () {
         _event.on('player-push-card-type', cb);
     };
 
-
-
-
-
-
-
-
     
+    that.onPlayeTimeOutCard = function (cb) {
+        _event.on('time-Out-Card', cb);
+    };
+    that.onPlayeTimeOutNoCard = function (cb) {
+        _event.on('time-out-noCard', cb);
+    };
 
+    that.onPlayeTimeOutNoRob = function (cb) {
+        _event.on('time-out-noRob', cb);
+    };
+  
+
+
+   
     that.onPlayerReady = function (cb) {
         _event.on('player_ready', cb);
     };
