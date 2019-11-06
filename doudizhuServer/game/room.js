@@ -67,8 +67,10 @@ module.exports = function (spec, player) {
     let _master = undefined;    //  地主
     let _masterIndex = undefined;   //  房主位置
     let _threeCardsList = [];   //  三组牌列表
+
     let _beforePlayerPushCardList = undefined //  之前玩家出的牌
     let _beforePlayerPushCardListPlayer = undefined //  之前出牌的玩家
+
     let _currentPlayerPushCardList = undefined; //当前玩家出的牌
     let _currentPlayerPushCardListPlayer = undefined;  //  当前出牌的玩家
     let _notPushCardNumber = 2;   //有几个玩家选择不出牌
@@ -79,8 +81,15 @@ module.exports = function (spec, player) {
     let _masterRHO = undefined; //  地主的上家
     let _masterNextHome = undefined;    //  地主下家
     let _gameFirstTimePushCards = true;    //  游戏第一次出牌
-    let _time = 10000;
-    let _animeDelayTime = 0;
+    let _time = 12000;          //  防呆时间
+    let _animeDelayTime = 0;     // 动画延迟时间
+    let _robMasterStauts = [];  //  记录玩家抢/不抢地主的状态
+    let readyNum = 0;   //  记录玩家准备人数
+
+
+
+
+
     // let cards = _carder.getThreeCards();
     //
     // for (let i = 0 ; i < cards.length ; i ++){
@@ -117,7 +126,8 @@ module.exports = function (spec, player) {
             case RoomState.WaitingReady:
                 break;
             case RoomState.StartGame:
-                 _recordrobMaterList = [];     //   记录已经抢地主的玩家列表
+               
+                _recordrobMaterList = [];     //   记录已经抢地主的玩家列表
                 _robMaterNum = 0;   //  记录抢地主次数
                 for (let i = 0; i < _playerList.length; i++) {
                     _playerList[i].cards = [];
@@ -139,6 +149,7 @@ module.exports = function (spec, player) {
                 setState(RoomState.RobMater);
                 break;
             case RoomState.RobMater:
+                _robMasterStauts = [];  //  记录所有玩家抢/不抢地主的状态
                 _robMaterPlayerList = [];
                 if (_lostPlayer === undefined) {
                     for (let i = _playerList.length - 1; i >= 0; i--) {
@@ -156,7 +167,7 @@ module.exports = function (spec, player) {
                 }
                 setTimeout(() => {
                     setState(RoomState.Playing);
-                }, 4000);
+                }, 3000);
                 break;
             case RoomState.Playing:
                 console.log('进入出牌阶段');
@@ -223,6 +234,7 @@ module.exports = function (spec, player) {
             }
         }
 
+       
         for (let i = 0; i < _playerList.length; i++) {
 
             _playerList[i].sendPlayerJoinRoom({
@@ -239,9 +251,38 @@ module.exports = function (spec, player) {
   /****************************   重连加入玩家end    ******************************** */
 
 
-
+  /***************************    重连加入房间成功   ************************************ */
     that.playerReEnterRoomScene = function(player, cb) {
         let playerData = [];
+        let robMasterStatusList ;
+        if(_state === 2 ){
+            robMasterStatusList= _robMasterStauts;
+           
+        }else{
+            robMasterStatusList = null;
+        }
+        let beforeCardAndPlayer = [];
+        let currentCardAndPlayer = [];
+        if(_master !== undefined && _currentPlayerPushCardListPlayer !== undefined){
+            // let l=[];
+            if(_beforePlayerPushCardListPlayer !== undefined ){
+                beforeCardAndPlayer.push(_beforePlayerPushCardListPlayer.accountID)
+                beforeCardAndPlayer.push(_beforePlayerPushCardList)
+               
+                // beforeCardAndPlayer.push(l);
+            }
+            if(_currentPlayerPushCardListPlayer !== undefined){
+                l=[];
+                currentCardAndPlayer.push(_currentPlayerPushCardListPlayer.accountID)
+                currentCardAndPlayer.push(_currentPlayerPushCardList)
+                // currentCardAndPlayer.push(l)
+            }
+           
+        }else{
+            beforeCardAndPlayer = null
+            currentCardAndPlayer = null 
+        }
+        
         for (let i = 0; i < _playerList.length; i++) {
             playerData.push({
                 nickName: _playerList[i].nickName,
@@ -249,12 +290,15 @@ module.exports = function (spec, player) {
                 avatarUrl: _playerList[i].avatarUrl,
                 gold: _playerList[i].gold,
                 seatIndex: _playerList[i].seatIndex,
-                cards : _playerList[i].cards,
-                buttonCard : _threeCardsList[3]
+                cards : _playerList[i].cards,   
+                robMasterStatusList : robMasterStatusList,  //  发送抢地主阶段的状态数据
+                beforeCardAndPlayer : beforeCardAndPlayer,
+                currentCardAndPlayer : currentCardAndPlayer,
+                buttonCard : _threeCardsList[3] //  发送底牌
                 
             });
         }
-
+        
         if (cb) {
             cb({
                 seatIndex: player.seatIndex,
@@ -265,6 +309,7 @@ module.exports = function (spec, player) {
         }
 
     }
+    /***************************    重连加入房间成功end   ************************************ */
 
 
     that.playerEnterRoomScene = function (player, cb) {
@@ -326,7 +371,7 @@ module.exports = function (spec, player) {
         _canPutCardPlayer = player;
 
 
-        if(_gameFirstTimePushCards || _notPushCardNumber === 2){
+        if(_gameFirstTimePushCards === true || _notPushCardNumber === 2){
             timeOut =  setTimeout(() => {
                 _gameFirstTimePushCards = false;
                
@@ -335,8 +380,8 @@ module.exports = function (spec, player) {
                     if(err){
                         console.log('出牌计时器错误 => ' + err)
                     }else{
-                        _canPutCardPlayer.sendTimeOutCard({
-                            accountID : _canPutCardPlayer.accountID,
+                        player.sendTimeOutCard({
+                            accountID : player.accountID,
                             cards : cardsList[0]
                         
                         });
@@ -351,7 +396,10 @@ module.exports = function (spec, player) {
                     if(err){
                         console.log('出牌计时器错误 => ' + err)
                     }else{
-                        _canPutCardPlayer.sendTimeOutNoCard([]);
+                        for(let i=0;i<_playerList.length;i++){
+                            _playerList[i].sendTimeOutNoCard(player.accountID,'no-push');
+                        }
+                        
                     }
                   
                 });
@@ -386,12 +434,18 @@ module.exports = function (spec, player) {
     /****************************************** 比较牌的大小    ********************************** */
     //  比较牌的大小
     that.playerPushCard = function (player, cards, cb) {
-         _time = 10000;
+         _time = 12000;
          _animeDelayTime = 0;
         
         if (cards.length === 0) {   //  玩家不出牌
             _notPushCardNumber ++;
             console.log('玩家不出牌' + _notPushCardNumber);
+
+            
+            for(let i=0;i<_playerList.length;i++){
+                _playerList[i].sendTimeOutNoCard(player.accountID,'no-push');
+            }
+
             if(cb){
                 cb(null,'不出')
             }
@@ -507,26 +561,28 @@ module.exports = function (spec, player) {
     const sendPlayerPushCard = function (player, cards,cardsValue) {   //  向客户端发送牌组及玩家的消息
         _notPushCardNumber = 0; 
         for (let i = 0; i < _playerList.length; i++) {
-
-            _playerList[i].sendPushCardType({
-                cardsValue : cardsValue,
-                cards: cards
-            })
-
-
-
+           
+           
             _playerList[i].sendPlayerPushCard({
                 accountID: player.accountID,
                 cards: cards,
                 rate : _rate
             })
+            _playerList[i].sendPushCardType({
+                cardsValue : cardsValue,
+                cards: cards
+            })
+          
         }
     };
 
     that.playerRobStateMaster = function (player, value) {  //  抢玩家抢地主的状态
         if (value === 'ok') {   //  抢
-
-            _animeDelayTime = 1000;
+            let l = [];
+            l.push(player.accountID)
+            l.push(value)
+            _robMasterStauts.push(l);
+            _animeDelayTime = 500;
 			_time = _time + _animeDelayTime
 
             console.log(' rob master ok');
@@ -546,9 +602,15 @@ module.exports = function (spec, player) {
             
         } else if (value === 'no-ok') { //  不抢
 
-            _time = 13000
+            _time = 12000
             _animeDelayTime = 0
             
+            let l = [];
+            l.push(player.accountID)
+            l.push(value)
+            _robMasterStauts.push(l);
+
+
             console.log('rob master no ok');
             if(_robMaterNum === 3 ){
                 if(_recordrobMaterList.length > 0){
@@ -639,7 +701,9 @@ module.exports = function (spec, player) {
                 for(let i = 0;i<_playerList.length; i++){
                     _playerList[i].sendNoMaster(_playerList);
                 }
+                _robMaterNum = 0;
                 _state = 2;
+                return;
             }else{
                 changeMaster();
             }
@@ -667,7 +731,7 @@ module.exports = function (spec, player) {
 
         console.log('可抢地主玩家信息 = ' + JSON.stringify(player))
 
-        _time = 13000
+        _time = 12000
         for (let i = 0; i < _playerList.length; i++) {  //  发送玩家能抢地主的状态
 		    animeDelayTime = setTimeout(() => {
                 _playerList[i].sendPlayerCanRobMater(player.accountID,_time);
@@ -692,9 +756,12 @@ module.exports = function (spec, player) {
   /**
    *       删除掉线玩家
    */
-    that.playerOffLine = function (player) {   
+    that.playerOffLine = function (player) {
         if(player.isReady === false){
             readyNum--
+        }
+        if(_state<= 1){
+            clearTimeout(readyTime);    //  清除准备时间
         }
         for (let i = 0; i < _playerList.length; i++) {
             if (_playerList[i].accountID === player.accountID) {
@@ -708,20 +775,39 @@ module.exports = function (spec, player) {
         }
     };
 
-    let readyNum = 0;
 
     /**
      *  发送玩家准备状态
      */
+    var readyTime ;
     that.playerReady = function (player) {
         if(player.isReady){
             readyNum++
         }else{
             readyNum--
         }
+
+        if(readyNum === 2 ){
+            readyTime = setTimeout(() => {
+                for(let i=0;i<_playerList.length;i++){
+                    if(_playerList[i].accountID !== _houseManager.accountID){
+                        
+                        _houseManager.sendPlayerLeave(_playerList[i]);
+                        _playerList[i].isReady = false;
+                        _playerList.splice(i,1);
+                        i--
+                  
+                }
+            }
+        }, _time);
+           
+        }
+
+
         for (let i = 0; i < _playerList.length; i++) {
             _playerList[i].sendPlayerReady({
                 readyNum : readyNum,
+                time : _time,
                 readyAccountID :player.accountID
             });
         }
@@ -749,6 +835,7 @@ module.exports = function (spec, player) {
                 }
             }
         }
+        clearTimeout(readyTime);    //  清除准备时间
         if (cb) {
             cb(null, 'success');
         }
@@ -862,21 +949,31 @@ module.exports = function (spec, player) {
     var msg = function(){
         for (let i = 0; i < _playerList.length; i++) {  //  发送结束消息
 
- 
+            if(_playerList[i].isOnLine === false){
+                that.playerLeave(_playerList[i]);
+                i--;
+            }
             if(_playerList[i].isrobot !== undefined){
                 that.playerLeave(_playerList[i]);
                 i--;
             }else{
-                _playerList[i].sendend({
-                    roomPlayerList: _playerList,
-                    houseManager : _houseManager.accountID,
-                    winId : winId
-                });
+
+                setTimeout(() => {
+
+                    _playerList[i].sendend({
+                        roomPlayerList: _playerList,
+                        houseManager : _houseManager.accountID,
+                        winId : winId
+                    });
+
+                }, 4000);
+
+              
             }
             
         }
         
-      
+         _rate = config.rate;  
          _lostPlayer = undefined;
          _robMaterPlayerList = [];   //  抢地主玩家列表
          _pushPlayerList = [];   //  出牌玩家列表
@@ -889,6 +986,7 @@ module.exports = function (spec, player) {
          _notPushCardNumber = 0;   //有几个玩家选择不出牌
         _state = RoomState.Invalide;
         _gameFirstTimePushCards = true
+        readyNum = 0;
     }
 
     };
@@ -917,6 +1015,7 @@ module.exports = function (spec, player) {
      that.playerLeave = function(player){
          if(player.isReady === true){
             readyNum--;
+            player.isReady = false;
          }
         
         for(let i=0;i<_playerList.length ; i++){
@@ -928,7 +1027,6 @@ module.exports = function (spec, player) {
 
         for(let i=0;i<_playerList.length ; i++){
             // if(_playerList[i].accountID === player.accountID){
-                
             // }else{
                 _playerList[i].sendPlayerLeave(player); 
             // }

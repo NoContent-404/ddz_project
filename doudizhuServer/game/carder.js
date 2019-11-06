@@ -112,8 +112,8 @@ module.exports = function () {
             Card(CardValue['7'], CardShape.C),
             Card(CardValue['9'], CardShape.C),
             Card(CardValue['9'], CardShape.C),
-            Card(CardValue['A'], CardShape.C),
-            Card(CardValue['A'], CardShape.C),
+            Card(CardValue['J'], CardShape.C),
+            Card(CardValue['J'], CardShape.C),
             Card(CardValue['J'], CardShape.C),
             // Card(CardValue['J'], CardShape.C),
             Card(undefined, undefined, Kings.k),
@@ -134,9 +134,9 @@ module.exports = function () {
             Card(CardValue['8'], CardShape.C),
             Card(CardValue['9'], CardShape.C),
             Card(CardValue['9'], CardShape.C),
-            Card(CardValue['10'], CardShape.C),
-            Card(CardValue['2'], CardShape.C),
-            Card(CardValue['2'], CardShape.C),
+            Card(CardValue['J'], CardShape.C),
+            Card(CardValue['J'], CardShape.C),
+            Card(CardValue['J'], CardShape.C),
             // Card(CardValue['J'], CardShape.C),
             // Card(CardValue['Q'], CardShape.C),
             // Card(CardValue['J'], CardShape.C),
@@ -1252,8 +1252,10 @@ module.exports = function () {
 
         for(let i = 0;i<threeList.length;i++){
             if(threeList[i][0].value > cardsA[0].value){
-                cardsList.push(threeList[i][0]);
-                cardsList.push(threeList[i][1]);
+                let l = [];
+                l.push(threeList[i][0]);
+                l.push(threeList[i][1]);
+                cardsList.push(l)
             }
             
         }
@@ -1262,8 +1264,10 @@ module.exports = function () {
         let fourBoomList = getFourBoom(cardsB);
         for(let i = 0;i<fourBoomList.length;i++){
             if(fourBoomList[i][0].value >  cardsA[0].value){
-                cardsList.push(fourBoomList[i][0]);
-                cardsList.push(fourBoomList[i][1]);
+                let l = [];
+                l.push(fourBoomList[i][0]);
+                l.push(fourBoomList[i][1]);
+                cardsList.push(l)
             }
         }
 

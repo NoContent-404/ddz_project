@@ -458,8 +458,8 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
     };
 
     
-    that.sendTimeOutNoCard = function (data) { //  发送超时卡牌信息
-        notify('time-out-noCard',data, null);
+    that.sendTimeOutNoCard = function (data,value) { //  发送超时卡牌信息
+        notify('time-out-noCard',{player:data,value:value}, null);
     };
 
     that.sendTimeOutNoRob = function (data) { //  发送超时卡牌信息

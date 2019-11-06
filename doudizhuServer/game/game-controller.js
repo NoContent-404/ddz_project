@@ -206,6 +206,8 @@ exports.leaveRoom = function(myRoom, data ,player, cb){
             _roomList[i].playerLeave(player);
         }
     }
+
+    
     if(cb){
         cb(null,{
             accountID : player.accountID,
