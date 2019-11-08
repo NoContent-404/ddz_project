@@ -75,20 +75,27 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         
         that.isOnLine = false;
         that.isTrusteeship = false; //  变回非托管状态
-        let  List1 =   gameContorller.getPlayerList();            
+        let  List1 =   gameContorller.getPlayerList();         
+        let roomList  = gameContorller.getroomList();
         console.log('在线玩家列表 = ' +JSON.stringify(List1));
         if (_room){
             if(_room.getRoomState() <=1){
+            
                 _room.playerOffLine(that);
-                that.isReady = false;
+                // that.isReady = false;
                 if(_room.getPlayerList().length === 0){
                     gameContorller.reMove(_room);
+                    console.log('房间列表' + roomList)
+                    
                 }
             }else{
                 console.log('游戏正在进行,玩家离线，实行玩家托管');
                 _room.lostConnection(that);
             }
             
+        }else{
+            gameContorller.reMovePlayer(that);
+            console.log('在线玩家人数 = ' + List1.length);   
         }
     });
     
@@ -340,6 +347,9 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                         //     player : that,
                         //     myRoom :roomName
                         // });
+                        let  List1 =   gameContorller.getPlayerList();         
+        
+                        console.log('在线玩家人数 = ' +List1.length);
                         console.log(JSON.stringify(data))
                         notify('select_game', {data: data}, callBackIndex);
                     }
@@ -417,7 +427,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
     };
 
 
-    that.sendPlayerRobStateMater = function (accountID, value , rate) {    //  向客户端发送玩家抢的状态
+    that.sendPlayerRobStateMater = function (accountID, value , rate) {    //  向客户端发送玩家抢/不抢的状态
         notify('player-rob-state', {accountID: accountID, value: value , rate : rate}, null);
     };
     that.sendChangeMaster = function (player, cards) {  //  发送客户端谁是地主
@@ -487,7 +497,8 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
 
     that.sendPlayerPushCard = function (data) { //  减少手牌数
         
-        let accountID = data.accountID;     //  
+        let accountID = data.accountID;     // 
+        let cards = data.cards; 
         if (accountID === that.accountID){
             let cards = data.cards;
             for (let i = 0 ; i < cards.length; i ++){
@@ -495,6 +506,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                 for (let j = 0 ; j < that.cards.length ; j ++){
                     if (card.id === that.cards[j].id){
                         that.cards.splice(j, 1);
+                        j--;
                     }
                 }
             }
@@ -503,11 +515,29 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
 
         // console.log('房间号 = ' + _room.roomID)
         
+        
         if(that.cards.length === 0){
+            let RplayerList =_room.getPlayerList();
+            let spring = RplayerList[0].cards.length + RplayerList[1].cards.length + RplayerList[2].cards.length;
+            let master = _room.getRoomMaster();
+            let playerSpring  = undefined;
+            for(let i=0;i<RplayerList.length;i++){
+                if(RplayerList[i].accountID !== master.accountID && RplayerList[i].cards.length === 17){  //  反春条件
+                    playerSpring = RplayerList[i];
+                }
+            }
 
-
-
-
+            let isSpring;
+            if((spring === 34 && playerSpring !== undefined) || (data.MasterPushNum === 1 && playerSpring !== undefined) ){
+                console.log('春天')
+                 isSpring = 'spring'
+            }else{
+                 isSpring = data.cardsValue
+            }
+            that.sendPushCardType({ //  发送牌的类型
+                cardsValue : isSpring,
+                cards: cards
+            });
 
             //  判断输赢
             if(that.isrobot){
@@ -516,18 +546,21 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                 for(let i=0;i<plen.length;i++){
                     if(plen[i].isrobot === undefined){
                         let _room =plen[i].getRoom();
-                        _room.houseManagerGameEnd(accountID);
+                        _room.houseManagerGameEnd(accountID,isSpring);
                         return;
                     }
                 }
             }else{
-                _room.houseManagerGameEnd(accountID);
+                _room.houseManagerGameEnd(accountID,isSpring);
                 return;
             }
            
         }
 
-
+        that.sendPushCardType({
+            cardsValue : data.cardsValue,
+            cards: cards
+        });
 
         console.log('剩余牌数 = ' + that.cards.length)
      

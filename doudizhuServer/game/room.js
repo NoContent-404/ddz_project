@@ -86,7 +86,7 @@ module.exports = function (spec, player) {
     let _robMasterStauts = [];  //  记录玩家抢/不抢地主的状态
     let readyNum = 0;   //  记录玩家准备人数
 
-
+    let _isMasterPushNum = 0   //   地主出牌次数
 
 
 
@@ -213,6 +213,8 @@ module.exports = function (spec, player) {
                 accountID: player.accountID,
                 avatarUrl: player.avatarUrl,
                 gold: player.gold,
+            
+                readyStusas : player.isReady,
                 seatIndex: player.seatIndex,
 
             })
@@ -242,6 +244,7 @@ module.exports = function (spec, player) {
                 accountID: player.accountID,
                 avatarUrl: player.avatarUrl,
                 gold: player.gold,
+                readyStusas : player.isReady,
                 seatIndex: player.seatIndex
             })
         }
@@ -265,13 +268,13 @@ module.exports = function (spec, player) {
         let currentCardAndPlayer = [];
         if(_master !== undefined && _currentPlayerPushCardListPlayer !== undefined){
             // let l=[];
-            if(_beforePlayerPushCardListPlayer !== undefined ){
+            if(_beforePlayerPushCardListPlayer !== undefined ){ //  之前出牌的玩家信息
                 beforeCardAndPlayer.push(_beforePlayerPushCardListPlayer.accountID)
                 beforeCardAndPlayer.push(_beforePlayerPushCardList)
                
                 // beforeCardAndPlayer.push(l);
             }
-            if(_currentPlayerPushCardListPlayer !== undefined){
+            if(_currentPlayerPushCardListPlayer !== undefined){ //  当前出牌玩家的信息
                 l=[];
                 currentCardAndPlayer.push(_currentPlayerPushCardListPlayer.accountID)
                 currentCardAndPlayer.push(_currentPlayerPushCardList)
@@ -312,19 +315,20 @@ module.exports = function (spec, player) {
     /***************************    重连加入房间成功end   ************************************ */
 
 
-    that.playerEnterRoomScene = function (player, cb) {
-
+    that.playerEnterRoomScene = function (player, cb) { //  玩家成功加入房间
+        
         if(_state>=2){
           that.playerReEnterRoomScene(player, cb);
           return;
         }
         let playerData = [];
-        for (let i = 0; i < _playerList.length; i++) {
+        for (let i = 0; i < _playerList.length; i++) {  
             playerData.push({
                 nickName: _playerList[i].nickName,
                 accountID: _playerList[i].accountID,
                 avatarUrl: _playerList[i].avatarUrl,
                 gold: _playerList[i].gold,
+                readyStusas : _playerList[i].isReady,
                 seatIndex: _playerList[i].seatIndex
             });
         }
@@ -413,7 +417,7 @@ module.exports = function (spec, player) {
 
 
                 animeDelayTime = setTimeout(() => {
-                    _time  = _time - _animeDelayTime
+                    _time  = 12000
                     _playerList[i].sendPlayerCanPushCard(player.accountID,_notPushCardNumber,_time);
                 }, _animeDelayTime);
             }
@@ -457,28 +461,31 @@ module.exports = function (spec, player) {
                 switch(cardsValue.name){
                     case 'Boom' : 
                     _rate = _rate * 2;
-                    _animeDelayTime = 3000;
+                    _animeDelayTime = 1000;
                     _time = _time + _animeDelayTime
                     break;
                     case 'Plane' : 
                     case 'PlaneWithOne' : 
                     case 'PlaneWithTwo' : 
-                    _animeDelayTime = 3000;
+                    _animeDelayTime = 2000;
                     _time = _time + _animeDelayTime
                     break;
                     case 'Scroll' : 
                     case 'DoubleScroll' : 
-                    _rate = _rate * 2;
-                    _animeDelayTime = 2000;
+                  
+                    _animeDelayTime = 1000;
                     _time = _time + _animeDelayTime
                 }
                 
 
                 if (_currentPlayerPushCardList === undefined || _notPushCardNumber === 2) {
                   
+                    if(player.accountID === _master.accountID){
+                        console.log('本局游戏开始，由地主开始出牌')
+                        _isMasterPushNum ++;    //  记录地主出牌次数
+                    }
+
                     _gameFirstTimePushCards = false;
-
-
                     _beforePlayerPushCardList = _currentPlayerPushCardList;
                     _beforePlayerPushCardListPlayer = _currentPlayerPushCardListPlayer;
 
@@ -503,6 +510,12 @@ module.exports = function (spec, player) {
                     console.log('对比牌型的大小' + result);
 
                     if (result === true){
+                        
+                        if(player.accountID === _master.accountID){
+                            console.log('地主出牌')
+                            _isMasterPushNum ++;    //  记录地主出牌次数
+                        }
+
                         if (cb) {
                             cb(null, cardsValue);
                         }
@@ -561,18 +574,14 @@ module.exports = function (spec, player) {
     const sendPlayerPushCard = function (player, cards,cardsValue) {   //  向客户端发送牌组及玩家的消息
         _notPushCardNumber = 0; 
         for (let i = 0; i < _playerList.length; i++) {
-           
-           
             _playerList[i].sendPlayerPushCard({
                 accountID: player.accountID,
+                cardsValue : cardsValue,
+                MasterPushNum : _isMasterPushNum,
                 cards: cards,
                 rate : _rate
             })
-            _playerList[i].sendPushCardType({
-                cardsValue : cardsValue,
-                cards: cards
-            })
-          
+
         }
     };
 
@@ -643,7 +652,14 @@ module.exports = function (spec, player) {
         if (_playerList.length === 0) {
             return;
         }
-        _houseManager = _playerList[0];
+        for(let i=0;i<_playerList.length;){
+            if(_playerList[i].isrobot !== true){
+                _houseManager = _playerList[0];
+                break;
+            }
+            
+        }
+        
         for (let i = 0; i < _playerList.length; i++) {
             _playerList[i].sendChangeHouseManager(_houseManager.accountID);
         }
@@ -757,9 +773,9 @@ module.exports = function (spec, player) {
    *       删除掉线玩家
    */
     that.playerOffLine = function (player) {
-        if(player.isReady === false){
-            readyNum--
-        }
+        // if(player.isReady === true){
+        //     readyNum--
+        // }
         if(_state<= 1){
             clearTimeout(readyTime);    //  清除准备时间
         }
@@ -786,19 +802,20 @@ module.exports = function (spec, player) {
         }else{
             readyNum--
         }
-
-        if(readyNum === 2 ){
+        clearTimeout(readyTime);    //  清除准备时间
+        
+        if(readyNum === 3 ){
             readyTime = setTimeout(() => {
                 for(let i=0;i<_playerList.length;i++){
                     if(_playerList[i].accountID !== _houseManager.accountID){
-                        
                         _houseManager.sendPlayerLeave(_playerList[i]);
                         _playerList[i].isReady = false;
                         _playerList.splice(i,1);
                         i--
-                  
                 }
             }
+            readyNum = 0;
+            return;
         }, _time);
            
         }
@@ -844,17 +861,17 @@ module.exports = function (spec, player) {
 
 /************************************************   游戏结算    *********************** */
     //  游戏结算
-    that.houseManagerGameEnd = function (winId) {
+    that.houseManagerGameEnd = function (winId,spring) {
         clearTimeout(timeOut);
         clearTimeout(animeDelayTime);
-        let spring = 0;
-        spring = _playerList[0].cards.length + _playerList[1].cards.length + _playerList[2].cards.length;
-        if(spring === 37  || spring === 34 ){   //  是否春天
+        
+       
+        if(spring === 'spring' ){   //  是否春天
             _rate = _rate * 2;
         }
         if(winId === _master.accountID){
             //  地主赢
-
+            console.log('地主获胜')
             for(let i=0;i<_playerList.length;i++){
                 
                 _playerList[i].isReady = false; //  设置未准备状态 
@@ -876,27 +893,38 @@ module.exports = function (spec, player) {
                     
                 };
                     //  更新玩家数据
-                      myDB.updataPlayerInfo(_playerList[i], (err , data)=>{
+                myDB.updataPlayerInfo(_playerList[i], (err , data)=>{
                 if(err){
                     console.log('更新错误 = '+ err);
                 }else{
-                    if(_playerList[i].isrobot !== true){
-                       client.send_command('lset',['user:' +_playerList[i].uniqueID+':data',0,JSON.stringify( pldata)], function(err,data) {
-                            console.log(data);          // OK
-                        })
-                        console.log('更新成功 = ' + JSON.stringify(data));
-                    }
-                    if(i===2){
-                        msg()
-                    }
+                 
+                    console.log('更新成功')
                     
                 }
             });
 
+            if(_playerList[i].isrobot !== true){
+                        
+                client.send_command('lset',['user:' +_playerList[i].uniqueID +':data',0,JSON.stringify(pldata)], function(err,data) {
+               
+                    if(err){
+                        console.log('更新redis错误' + err)
+                    }else{
+                        console.log('更新成功 = ' + JSON.stringify(data));
+              
+                        if(i===2){
+                            msg()
+                        }
+                    }
+                })
+               
+            }else{
+                console.log('更新redis不符合')
+            }
  
             }
         }else{
-           
+           console.log('农民获胜')
             //  农民赢
             for(let i=0;i<_playerList.length;i++){
 
@@ -925,21 +953,31 @@ module.exports = function (spec, player) {
                     if(err){
                         console.log('更新错误 = '+ err);
                     }else{
-                        if(_playerList[i].isrobot !== true){
-                             client.send_command('lset',['user:' +_playerList[i].uniqueID+':data',0,JSON.stringify(pldata)], function(err,data) {
-                                console.log(data);          // OK
-                                if(i===2){
-                                    msg();
-                                   }
-                            })
-                            
-                        }
-                        console.log('更新成功 = ' + JSON.stringify(data));
+                      
+                        console.log('更新成功  ');
                        
                     }
                 });
 
             
+                if(_playerList[i].isrobot !== true){
+                        
+                    client.send_command('lset',['user:' +_playerList[i].uniqueID +':data',0,JSON.stringify(pldata)], function(err,data) {
+                   
+                        if(err){
+                            console.log('更新redis错误' + err)
+                        }else{
+                            console.log('更新成功 = ' + JSON.stringify(data));
+                
+                            if(i===2){
+                                msg()
+                            }
+                        }
+                    })
+                   
+                }else{
+                    console.log('更新redis不符合')
+                }
 
         }
 
@@ -972,7 +1010,9 @@ module.exports = function (spec, player) {
             }
             
         }
-        
+        _time = 12000;
+        _animeDelayTime = 0;     // 动画延迟时间
+        _isMasterPushNum = 0   //   地主出牌次数
          _rate = config.rate;  
          _lostPlayer = undefined;
          _robMaterPlayerList = [];   //  抢地主玩家列表

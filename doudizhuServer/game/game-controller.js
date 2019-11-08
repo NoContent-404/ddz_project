@@ -39,7 +39,6 @@ exports.selectPlayer = function(data,player,cb){  //  搜索玩家
                     rpList.splice(j,1,player);
                     _playerList.splice(j,1,player);
                     for(let k = 0;k<RMPLList.length;k++){
-
                         if(data == RMPLList[k].accountID){
                             RMPLList.splice(k,1,player);
                         }
@@ -206,6 +205,7 @@ exports.leaveRoom = function(myRoom, data ,player, cb){
             _roomList[i].playerLeave(player);
         }
     }
+    console.log('房间列表'+_roomList)
 
     
     if(cb){
@@ -225,7 +225,19 @@ exports.reMove = function(room){
             _roomList.splice(i,1);
         }
     }
+
+    
+
 };
 
 
+exports.reMovePlayer = function(player){
 
+
+    for(let i=0;i<_playerList.length;i++){
+        if(_playerList[i].accountID === player.accountID){
+            _playerList.splice(i,1);
+        }
+    }
+
+};
