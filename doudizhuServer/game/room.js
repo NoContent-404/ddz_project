@@ -573,11 +573,38 @@ module.exports = function (spec, player) {
     };
     const sendPlayerPushCard = function (player, cards,cardsValue) {   //  向客户端发送牌组及玩家的消息
         _notPushCardNumber = 0; 
+        let isSpring;
+        let spring = 0;
+        if(player.cards.length === cards.length){
+            let playerSpring  = undefined;
+            for(let i=0;i<_playerList.length;i++){
+                if(_playerList[i].accountID !== player.accountID){
+                     spring = spring + _playerList[i].cards.length ;
+                }
+                if(_playerList[i].accountID !== _master.accountID && _playerList[i].cards.length === 17){  //  反春条件
+                    playerSpring = _playerList[i];
+                }
+            }
+            if((spring === 34 && playerSpring !== undefined) || (_isMasterPushNum === 1 && playerSpring !== undefined) ){
+                console.log('春天')
+                _rate = _rate * 2;
+                 isSpring = 'spring'
+            }else{
+                 isSpring = cardsValue
+            }
+
+
+            // if(spring === 'spring' ){   //  是否春天
+                
+            // }
+        }else{
+            isSpring = cardsValue
+        }
+
         for (let i = 0; i < _playerList.length; i++) {
             _playerList[i].sendPlayerPushCard({
                 accountID: player.accountID,
-                cardsValue : cardsValue,
-                MasterPushNum : _isMasterPushNum,
+                cardsValue : isSpring,
                 cards: cards,
                 rate : _rate
             })
@@ -661,7 +688,7 @@ module.exports = function (spec, player) {
         }
         
         for (let i = 0; i < _playerList.length; i++) {
-            _playerList[i].sendChangeHouseManager(_houseManager.accountID);
+            _playerList[i].sendChangeHouseManager(_houseManager.accountID,_houseManager.isReady);
         }
     };
 
@@ -763,6 +790,7 @@ module.exports = function (spec, player) {
         clearTimeout(robMaterTime);
         for (let i = 0; i < _playerList.length; i++) {
             console.log('地主'+_master)
+            _playerList[i].isReady = false
             _playerList[i].sendChangeMaster(_master,_threeCardsList[3]);
         }
         setState(RoomState.ShowBottomCard);
@@ -811,12 +839,13 @@ module.exports = function (spec, player) {
                         _houseManager.sendPlayerLeave(_playerList[i]);
                         _playerList[i].isReady = false;
                         _playerList.splice(i,1);
-                        i--
+                        i--;
+                        readyNum --
                 }
             }
-            readyNum = 0;
+            
             return;
-        }, _time);
+        }, 10000);
            
         }
 
@@ -843,14 +872,14 @@ module.exports = function (spec, player) {
             return;
         }
         for (let i = 0; i < _playerList.length; i++) {
-            if (_playerList[i].accountID !== _houseManager.accountID) {
+            // if (_playerList[i].accountID !== _houseManager.accountID) {
                 if (_playerList[i].isReady === false) {
                     if (cb) {
                         cb('有玩家未准备，不能开始游戏!');
                     }
                     return;
                 }
-            }
+            // }
         }
         clearTimeout(readyTime);    //  清除准备时间
         if (cb) {
@@ -861,14 +890,12 @@ module.exports = function (spec, player) {
 
 /************************************************   游戏结算    *********************** */
     //  游戏结算
-    that.houseManagerGameEnd = function (winId,spring) {
+    that.houseManagerGameEnd = function (winId) {
         clearTimeout(timeOut);
         clearTimeout(animeDelayTime);
         
        
-        if(spring === 'spring' ){   //  是否春天
-            _rate = _rate * 2;
-        }
+     
         if(winId === _master.accountID){
             //  地主赢
             console.log('地主获胜')
@@ -927,7 +954,7 @@ module.exports = function (spec, player) {
            console.log('农民获胜')
             //  农民赢
             for(let i=0;i<_playerList.length;i++){
-
+                
                 _playerList[i].isReady = false; //  设置未准备状态
                 if(_playerList[i].accountID == _master.accountID){
                     _playerList[i].gold = _playerList[i].gold - (_rate * config.bottom * 2);  //  赢 ： 玩家金币 = 原玩家金币 + （倍数 * 底数 * 2）
@@ -987,29 +1014,39 @@ module.exports = function (spec, player) {
     var msg = function(){
         for (let i = 0; i < _playerList.length; i++) {  //  发送结束消息
 
-            if(_playerList[i].isOnLine === false){
-                that.playerLeave(_playerList[i]);
-                i--;
-            }
-            if(_playerList[i].isrobot !== undefined){
-                that.playerLeave(_playerList[i]);
-                i--;
-            }else{
+            setTimeout(() => {
+                    
+                _playerList[i].sendend({
+                    roomPlayerList: _playerList,
+                    houseManager : _houseManager.accountID,
+                    winId : winId,
+                    rate : _rate
+                });
 
-                setTimeout(() => {
-
-                    _playerList[i].sendend({
-                        roomPlayerList: _playerList,
-                        houseManager : _houseManager.accountID,
-                        winId : winId
-                    });
-
-                }, 4000);
-
-              
-            }
+            }, 2000);
+            
             
         }
+        for(let i=0;i<_playerList.length;i++){
+            setTimeout(() => {
+                if(_playerList[i] !== undefined){
+                    if(_playerList[i].isOnLine === false){
+                        that.playerLeave(_playerList[i]);
+                        i--;
+                    }
+                }
+                
+                if(_playerList[i] !== undefined){
+                    if(_playerList[i].isrobot === true){
+                        that.playerLeave(_playerList[i]);
+                        i--;
+                    }
+                }
+                
+            }, 3000);
+        }
+        
+
         _time = 12000;
         _animeDelayTime = 0;     // 动画延迟时间
         _isMasterPushNum = 0   //   地主出牌次数
@@ -1017,17 +1054,25 @@ module.exports = function (spec, player) {
          _lostPlayer = undefined;
          _robMaterPlayerList = [];   //  抢地主玩家列表
          _pushPlayerList = [];   //  出牌玩家列表
-         _master = undefined;    //  房主
+         _master = undefined;    //  地主
          _masterIndex = undefined;   //  房主位置
          _threeCardsList = [];   //  三组牌列表
          _currentPlayerPushCardList = undefined; //当前玩家出的牌
+         _currentPlayerPushCardListPlayer = undefined;  //  当前出牌的玩家
          _beforePlayerPushCardList = undefined;
         _beforePlayerPushCardListPlayer = undefined;
-         _notPushCardNumber = 0;   //有几个玩家选择不出牌
+         _notPushCardNumber = 2;   //有几个玩家选择不出牌
+         _canRobPlayer = undefined;  //  记录是谁能抢地主
+         _canPutCardPlayer = undefined;  //  能出牌玩家
+         _recordrobMaterList = [];     //  记录抢地主次数
         _state = RoomState.Invalide;
+        _robMasterStauts = [];  //  记录玩家抢/不抢地主的状态
         _gameFirstTimePushCards = true
         readyNum = 0;
+        _robMaterNum = 0;
+        _masterRHO = undefined; //  地主的上家
     }
+
 
     };
 

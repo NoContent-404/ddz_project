@@ -55,12 +55,12 @@ app.use('/login', function (req,res) {
                     );
                     // res.setHeader('Set-Cookie','username=1111;path=/;httponly')
                     res.cookie('user',ac,{maxAge: 60 * 1000 * 300});
-                    res.redirect(302, 'http://192.168.1.12:7456/?unique_id='+ ac);
+                    res.redirect(302, 'http://192.168.1.4:7457/?unique_id='+ ac);
                 }else{
                     // res.setHeader('Set-Cookie','username=1111;path=/;httponly')
                     res.cookie('user',data[0].unique_id,{maxAge:60 * 1000 * 300});
                     console.log(data[0].unique_id)
-                    res.redirect(302, 'http://192.168.1.12:7456/?unique_id='+data[0].unique_id);
+                    res.redirect(302, 'http://192.168.1.4:7457/?unique_id='+data[0].unique_id);
                 } 
             }
         });
@@ -96,11 +96,11 @@ app.use('/cookie', function (req,res) {
     
 
     if(unique_id == undefined){
-        res.redirect(302, 'http://192.168.1.12:7456/?unique_id=no');
+        res.redirect(302, 'http://192.168.1.4:7457/?unique_id=no');
         console.log("cookie no exist ：告诉他需要验证登录")
     }else{
         console.log("cookie = "+ unique_id)
-        res.redirect(302, 'http://192.168.1.12:7456/?unique_id='+unique_id);
+        res.redirect(302, 'http://192.168.1.4:7457/?unique_id='+unique_id);
         console.log("cookie exist this name:"+unique_id)
     }
    

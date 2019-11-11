@@ -77,7 +77,7 @@ module.exports = function () {
             Card(CardValue['3'], CardShape.C),
             Card(CardValue['3'], CardShape.C),
             Card(CardValue['3'], CardShape.C),
-            Card(CardValue['3'], CardShape.C),
+            Card(CardValue['4'], CardShape.C),
             Card(CardValue['5'], CardShape.C),
             Card(CardValue['5'], CardShape.C),
             Card(CardValue['6'], CardShape.C),
@@ -99,6 +99,8 @@ module.exports = function () {
 
 
         let cardListA = [
+            Card(CardValue['3'], CardShape.C),
+            Card(CardValue['3'], CardShape.C),
             Card(CardValue['4'], CardShape.C),
             Card(CardValue['4'], CardShape.C),
             Card(CardValue['5'], CardShape.C),
@@ -112,30 +114,28 @@ module.exports = function () {
             Card(CardValue['9'], CardShape.C),
             Card(CardValue['9'], CardShape.C),
             Card(CardValue['10'], CardShape.C),
-            Card(CardValue['10'], CardShape.C),
-            Card(CardValue['J'], CardShape.C),
-            Card(CardValue['J'], CardShape.C),
-            // Card(CardValue['J'], CardShape.C),
-            Card(undefined, undefined, Kings.k),
+            Card(CardValue['K'], CardShape.C),
+            Card(CardValue['K'], CardShape.C),
+            // Card(undefined, undefined, Kings.k),
             // Card(undefined, undefined, Kings.K),
 
         ];
 
         let cardListB = [
-            Card(CardValue['K'], CardShape.C),
-            Card(CardValue['K'], CardShape.C),
-            Card(CardValue['K'], CardShape.C),
+            Card(CardValue['3'], CardShape.C),
+            Card(CardValue['3'], CardShape.C),
             Card(CardValue['4'], CardShape.C),
             Card(CardValue['4'], CardShape.C),
             Card(CardValue['5'], CardShape.C),
             Card(CardValue['5'], CardShape.C),
             Card(CardValue['6'], CardShape.C),
             Card(CardValue['6'], CardShape.C),
+            Card(CardValue['7'], CardShape.C),
+            Card(CardValue['7'], CardShape.C),
+            Card(CardValue['8'], CardShape.C),
             Card(CardValue['8'], CardShape.C),
             Card(CardValue['9'], CardShape.C),
             Card(CardValue['9'], CardShape.C),
-            Card(CardValue['J'], CardShape.C),
-            Card(CardValue['J'], CardShape.C),
             Card(CardValue['J'], CardShape.C),
             // Card(CardValue['J'], CardShape.C),
             // Card(CardValue['Q'], CardShape.C),
@@ -1355,7 +1355,15 @@ module.exports = function () {
         let valueA = getRepeatValue(3,cardsA);  //  返回   卡牌的 value
         console.log('value a = ' + valueA);
         let list = getRepeatCardsList(3, cardsB);
+        
+
+        let allCardList = [];
+
         let cardList = [];
+        if(list.length ===0){
+            return;
+        }
+
         for (let i = 0 ; i < list.length ; i ++){
             if (list[i][0].value > valueA){
                 cardList.push(list[i]);
@@ -1363,40 +1371,132 @@ module.exports = function () {
         }
 
         let oneList = getRepeatCardsList(num, cardsB);//    获取单或者对子
-        let minNum = 100;
-        let oneCard = undefined;
-        for (let i = 0 ; i < oneList.length ; i ++){
-            if (oneList[i][0].value < minNum){
-                minNum = oneList[i][0].value;
-                oneCard = oneList[i];
+        let one = [];
+        if(oneList.length >0){
+            // let minNum = 100;
+            // let oneCard = undefined;
+            // for (let i = 0 ; i < oneList.length ; i ++){
+            //     if (oneList[i][0].value < minNum){
+            //         minNum = oneList[i][0].value;
+            //         oneCard = oneList[i];
+            //     }
+            // }
+            for (let i = 0 ; i < cardList.length ; i ++){
+                // let l = cardList[i];
+                // if (oneCard !== undefined){
+                    for (let j = 0 ; j < oneList.length ; j ++){
+                        let l = JSON.parse(JSON.stringify(cardList[i])); //  复制数组 
+                        l.push(oneList[j][0]);
+                        one.push(l)
+                    }
+                // }
             }
-        }
-        for (let i = 0 ; i < cardList.length ; i ++){
-            let l = cardList[i];
-            if (oneCard !== undefined){
-                for (let j = 0 ; j < oneCard.length ; j ++){
-                    l.push(oneCard[j]);
-                }
+
+            for(let i=0;i<one.length;i++){
+                allCardList.push(one[i]);
             }
         }
 
-        if(oneCard === undefined){
-            cardList = [];
+
+        let twoList = getRepeatCardsList(2, cardsB);//    获取单或者对子
+        let two = [];
+        if(twoList.length >0){
+            for (let i = 0 ; i < cardList.length ; i ++){
+                // if (twoList !== undefined){
+                        for (let j = 0 ; j < twoList.length ; j ++){
+                        let l = JSON.parse(JSON.stringify(cardList[i])); //  复制数组  
+                        l.push(twoList[j][0]);
+                        two.push(l)
+                    }
+                // }
+            }
+            for(let i=0;i<two.length;i++){
+                allCardList.push(two[i]);
+            }
+        }
+
+        // if(oneCard === undefined){
+        //     cardList = [];
+        // }
+
+
+        let threeList = JSON.parse(JSON.stringify(cardList)); //  复制数组 
+        let three = []; 
+        if(threeList.length>0){
+            
+            for(let i=0;i<cardList.length;i++){
+                for (let j = 0 ; j < threeList.length ; j ++){
+                    if(cardList[i][0].value !== threeList[j][0].value){
+                        let l = JSON.parse(JSON.stringify(cardList[i])); //  复制数组  
+                        l.push(threeList[j][0]);
+                        three.push(l)
+                    }
+                   
+                }
+            }
+            for(let i=0;i<three.length;i++){
+                allCardList.push(three[i]);
+            }
+        }
+
+
+        
+        let fourBoomList = getFourBoom(cardsB);
+    
+
+
+
+        let fourList = JSON.parse(JSON.stringify(fourBoomList)); //  复制数组 
+        let four = []; 
+        if(fourList.length>0){
+            
+            for(let i=0;i<cardList.length;i++){
+                for (let j = 0 ; j < fourList.length ; j ++){
+                        let l = JSON.parse(JSON.stringify(cardList[i])); //  复制数组  
+                        l.push(fourList[j][0]);
+                        four.push(l)
+                }
+            }
+            for(let i=0;i<four.length;i++){
+                allCardList.push(four[i]);
+            }
         }
 
         let kingBoom = getKingBoom(cardsB);
-        if (kingBoom !== false) {
-            cardList.push(kingBoom);
-        }
-        let fourBoomList = getFourBoom(cardsB);
-        if (fourBoomList !== false) {
-            // cardsList.push(fourBoom);
-            for (let i = 0; i < fourBoomList.length; i++) {
-                cardList.push(fourBoomList[i]);
+
+        let kingBoomList = JSON.parse(JSON.stringify(kingBoom)); //  复制数组 
+        let kBoom = []; 
+        if(kingBoomList.length>0){
+            
+            for(let i=0;i<cardList.length;i++){
+                for (let j = 0 ; j < kingBoomList.length ; j ++){
+                        let l = JSON.parse(JSON.stringify(cardList[i])); //  复制数组  
+                        l.push(kingBoomList[j][0]);
+                        kBoom.push(l)
+                }
+            }
+            for(let i=0;i<kBoom.length;i++){
+                allCardList.push(kBoom[i]);
             }
         }
 
-        return cardList;
+
+
+        if (fourBoomList !== false) {
+
+            // cardsList.push(fourBoom);
+            for (let i = 0; i < fourBoomList.length; i++) {
+                allCardList.push(fourBoomList[i]);
+            }
+        }
+
+        
+        if (kingBoom !== false) {
+
+            allCardList.push(kingBoom);
+        }
+
+        return allCardList;
     };
 
 
@@ -1444,6 +1544,7 @@ module.exports = function () {
     
     that.tipsThreeWithOne = function (cardsA, cardsB) { //  提示3带1
         //3,3,3,4
+      
         return getThreeWithNumCardsList(1, cardsA, cardsB);
 
     };
@@ -1731,12 +1832,18 @@ module.exports = function () {
             return a.value - b.value;
         });
         let cardsList = [];
-        for (let i = 0 ; i <(cardList.length - length); i ++){
+        for (let i = 0 ; i <cardList.length ; i ++){
             let list = [];
             for (let j = i ; j < i + length ; j ++){
-                list.push(cardList[j]);
+                if(cardList[j] !== undefined ){
+                    list.push(cardList[j]);
+                }
+                
             }
-            cardsList.push(list);
+            if(list.length === length){
+                cardsList.push(list);
+        }
+            
         }
         console.log('cars list =  ' + JSON.stringify(cardsList));
         let endList = [];

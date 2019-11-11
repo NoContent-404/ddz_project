@@ -95,7 +95,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
             
         }else{
             gameContorller.reMovePlayer(that);
-            console.log('在线玩家人数 = ' + List1.length);   
+            console. log('在线玩家人数 = ' + List1.length);   
         }
     });
     
@@ -385,8 +385,8 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         notify('game_start', {}, null);
     };
     
-    that.sendChangeHouseManager = function (data) { //  向客户端发送改变房主的信息
-        notify('change_house_manager', data, null);
+    that.sendChangeHouseManager = function (data,readyStatus) { //  向客户端发送改变房主的信息
+        notify('change_house_manager', {data:data,stauts : readyStatus}, null);
     };
     that.sendPushCard = function (cards) {  //  发送牌给客户端
         that.cards = cards;
@@ -496,7 +496,7 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
 
 
     that.sendPlayerPushCard = function (data) { //  减少手牌数
-        
+        let isSpring = data.cardsValue;
         let accountID = data.accountID;     // 
         let cards = data.cards; 
         if (accountID === that.accountID){
@@ -517,25 +517,25 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
         
         
         if(that.cards.length === 0){
-            let RplayerList =_room.getPlayerList();
-            let spring = RplayerList[0].cards.length + RplayerList[1].cards.length + RplayerList[2].cards.length;
-            let master = _room.getRoomMaster();
-            let playerSpring  = undefined;
-            for(let i=0;i<RplayerList.length;i++){
-                if(RplayerList[i].accountID !== master.accountID && RplayerList[i].cards.length === 17){  //  反春条件
-                    playerSpring = RplayerList[i];
-                }
-            }
+            // let RplayerList =_room.getPlayerList();
+            // let spring = RplayerList[0].cards.length + RplayerList[1].cards.length + RplayerList[2].cards.length;
+            // let master = _room.getRoomMaster();
+            // let playerSpring  = undefined;
+            // for(let i=0;i<RplayerList.length;i++){
+            //     if(RplayerList[i].accountID !== master.accountID && RplayerList[i].cards.length === 17){  //  反春条件
+            //         playerSpring = RplayerList[i];
+            //     }
+            // }
 
-            let isSpring;
-            if((spring === 34 && playerSpring !== undefined) || (data.MasterPushNum === 1 && playerSpring !== undefined) ){
-                console.log('春天')
-                 isSpring = 'spring'
-            }else{
-                 isSpring = data.cardsValue
-            }
+            // let isSpring;
+            // if((spring === 34 && playerSpring !== undefined) || (data.MasterPushNum === 1 && playerSpring !== undefined) ){
+            //     console.log('春天')
+            //      isSpring = 'spring'
+            // }else{
+            //      isSpring = data.cardsValue
+            // }
             that.sendPushCardType({ //  发送牌的类型
-                cardsValue : isSpring,
+                cardsValue : data.cardsValue,
                 cards: cards
             });
 
@@ -546,21 +546,23 @@ module.exports = function (spec, socket, cbIndex, gameContorller) {
                 for(let i=0;i<plen.length;i++){
                     if(plen[i].isrobot === undefined){
                         let _room =plen[i].getRoom();
-                        _room.houseManagerGameEnd(accountID,isSpring);
-                        return;
+                        _room.houseManagerGameEnd(accountID);
+                        
                     }
                 }
             }else{
-                _room.houseManagerGameEnd(accountID,isSpring);
-                return;
+                _room.houseManagerGameEnd(accountID);
+                
             }
            
+        }else{
+            that.sendPushCardType({
+                cardsValue : data.cardsValue,
+                cards: cards
+            });
         }
 
-        that.sendPushCardType({
-            cardsValue : data.cardsValue,
-            cards: cards
-        });
+        
 
         console.log('剩余牌数 = ' + that.cards.length)
      
